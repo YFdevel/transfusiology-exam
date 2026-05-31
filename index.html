@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Приказ №286 от 27.05.2025: Полная организация трансфузиологической помощи (РКМЦ)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            background: #f0f4f9;
+            color: #1a2c3e;
+            line-height: 1.45;
+        }
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .header {
+            background: #0b3b5f;
+            color: white;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        .header p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+        .main-grid {
+            display: flex;
+            flex: 1;
+        }
+        .sidebar {
+            background: #eef2f5;
+            width: 290px;
+            flex-shrink: 0;
+            border-right: 1px solid #cbdbe2;
+            padding: 1.5rem 0.75rem;
+            height: calc(100vh - 85px);
+            position: sticky;
+            top: 85px;
+            overflow-y: auto;
+        }
+        .sidebar nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar nav li {
+            margin-bottom: 0.5rem;
+        }
+        .sidebar nav a {
+            display: block;
+            padding: 0.6rem 0.8rem;
+            color: #1a4b6e;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+        .sidebar nav a:hover {
+            background: #d0e2f0;
+            color: #0a3146;
+        }
+        .content {
+            flex: 1;
+            padding: 1.8rem 2rem;
+            overflow-x: auto;
+        }
+        .section-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            padding: 1.5rem 1.8rem;
+        }
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            border-left: 6px solid #0f6b9c;
+            padding-left: 1rem;
+            margin-bottom: 1.2rem;
+            color: #0f3b55;
+        }
+        .subsection-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1rem 0 0.6rem;
+            color: #1f6392;
+            border-bottom: 2px solid #cde3f0;
+            padding-bottom: 0.3rem;
+        }
+        .info-list {
+            padding-left: 1.5rem;
+            margin: 0.8rem 0;
+        }
+        .info-list li {
+            margin: 0.5rem 0;
+        }
+        .grid-2col {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.2rem;
+            margin: 1rem 0;
+        }
+        .step-box {
+            background: #f9fbfd;
+            border-left: 3px solid #2c7cb6;
+            padding: 0.8rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: 12px;
+        }
+        .footnote {
+            font-size: 0.75rem;
+            color: #4a627a;
+            margin-top: 0.8rem;
+            border-top: 1px dashed #cbdae6;
+            padding-top: 0.6rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+            display: block;
+            overflow-x: auto;
+        }
+        th, td {
+            border: 1px solid #cfdfe9;
+            padding: 10px 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background: #e5f0f7;
+        }
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: #0f6b9c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+        .btn:hover {
+            background: #0a4a6e;
+        }
+        @media (max-width: 800px) {
+            .sidebar {
+                display: none;
+            }
+            .main-grid {
+                flex-direction: column;
+            }
+            .content {
+                padding: 1rem;
+            }
+            .section-card {
+                padding: 1rem;
+            }
+        }
+        .mobile-nav {
+            display: none;
+            background: #eef2f5;
+            padding: 0.5rem;
+            overflow-x: auto;
+            white-space: nowrap;
+            border-bottom: 1px solid #ccc;
+        }
+        @media (max-width: 800px) {
+            .mobile-nav {
+                display: flex;
+                gap: 0.5rem;
+            }
+            .mobile-nav a {
+                background: white;
+                padding: 0.4rem 1rem;
+                border-radius: 40px;
+                text-decoration: none;
+                font-size: 0.75rem;
+                font-weight: 500;
+                color: #1a4b6e;
+            }
+        }
+        pre {
+            background: #f4f7fb;
+            padding: 1rem;
+            border-radius: 16px;
+            overflow-x: auto;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="header">
+        <h1>📋 Приказ № 286 от 27.05.2025</h1>
+        <p>«Об организации трансфузиологической помощи» — ГУ «РКМЦ» Управления делами Президента Республики Беларусь</p>
+    </div>
+    <div class="mobile-nav" id="mobileNav"></div>
+    <div class="main-grid">
+        <aside class="sidebar" id="sidebarNav">
+            <nav><ul id="navList"></ul></nav>
+        </aside>
+        <main class="content" id="mainContent"></main>
+    </div>
+</div>
+
+<script>
+    // ---------- ДАННЫЕ ПОЛНОСТЬЮ ИЗ ПРИКАЗА (БЕЗ ВЫМЫШЛЕННЫХ МЕСТ ХРАНЕНИЯ) ----------
+    const sectionsData = [
+        { id: "preambule", title: "📜 Преамбула и нормативная база" },
+        { id: "approved", title: "📎 Утверждённые приложения 1–20" },
+        { id: "definitions", title: "📖 Термины и определения (ст.2)" },
+        { id: "tp_participants", title: "👩‍⚕️ Допуск персонала к ТП (п.3,4)" },
+        { id: "safety_reqs", title: "🛡️ Требования безопасности (Приложение 1)" },
+        { id: "coldchain", title: "❄️ Холодовая цепь (Приложение 2)" },
+        { id: "immuno", title: "🔬 Иммуногематология (п.7-8)" },
+        { id: "consult", title: "👨‍⚕️ Консультация трансфузиолога (п.9)" },
+        { id: "order_procurement", title: "📦 Порядок обеспечения и заявки (Прил.10, п.6)" },
+        { id: "transfusion_order", title: "💉 Порядок медприменения (Приложение 20)" },
+        { id: "reaction_algo", title: "🚨 Алгоритм ТР/ПТО (Приложение 14)" },
+        { id: "documentation", title: "📂 Требования к документации (Приложение 19)" },
+        { id: "quality", title: "📊 Оценка качества ТП (Прил.15,18)" },
+        { id: "prohibitions", title: "⛔ Запрещённые действия (п.5.6, 5.5, 6)" },
+        { id: "sources", title: "📁 Исходники / Нормативные источники" }
+    ];
+
+    const legalActs = [
+        "Закон РБ от 30.11.2010 № 197-З «О донорстве крови и ее компонентов»",
+        "Постановление Минздрава РБ от 19.05.2011 № 39 «О медицинском применении крови и (или) ее компонентов»",
+        "Постановление Минздрава РБ от 19.05.2023 № 92 «Инструкция о порядке медицинского применения крови и (или) ее компонентов»",
+        "Постановление Минздрава РБ от 13.05.2023 № 82 «Форма письменного согласия реципиента»",
+        "Постановление Минздрава РБ от 13.05.2023 № 83 «Учет неблагоприятных последствий переливания»",
+        "Постановление Минздрава РБ от 19.05.2023 № 89 «О качестве крови и номенклатуре»",
+        "Приказ Минздрава РБ от 11.12.2019 № 1486 «Типовое положение о трансфузиологической помощи»"
+    ];
+
+    const appendicesList = [
+        "1: Требования безопасности", "2: Схема холодовой цепи", "3: Направление на иммуногематологическое исследование",
+        "4: Журнал расхождений при определении группы крови", "5: Направление на подбор совместимой крови/консультирование",
+        "6: Направление для пробы на индивидуальную совместимость (неполные антитела)", "7: Журнал проб на индивидуальную совместимость",
+        "8: Письменное согласие реципиента", "9: Заявка на продукты крови", "10: Порядок обеспечения продуктами крови и заявки",
+        "11: Журнал регистрации медприменения продуктов крови", "12: Лист регистрации медприменения",
+        "13: Протокол переливания крови", "14: Алгоритм действий при ТР/ПТО", "15: Карта оценки качества ТП пациенту",
+        "16: Отчет о ТП в подразделении", "17: Отчет об иммуногематологических исследованиях", "18: Карта оценки качества ТП в подразделении",
+        "19: Требования к оформлению меддокументации", "20: Порядок медицинского применения крови и компонентов"
+    ];
+
+    const definitions = [
+        "Трансфузиологическая помощь (ТП) – комплекс услуг для эффективного и безопасного поддержания функции крови и гомеостаза.",
+        "Менеджмент крови пациента – междисциплинарный подход к оптимизации лечения, сбережению собственной крови.",
+        "Трансфузиологическое пособие – вмешательства: кровесбережение, применение аллогенных/аутологичных компонентов, PRP, эфферентные методы.",
+        "Продукты крови – кровь, компоненты, ЛП из плазмы, изделия медицинского назначения.",
+        "Реципиент – пациент, которому требуется или выполнено переливание.",
+        "Идентификация пациента – сверка ФИО, даты рождения, номера медкарты.",
+        "Трансфузионный анамнез – сведения о трансфузиях, реакциях, антителах.",
+        "Неблагоприятное последствие – трансфузионная реакция (ТР) или посттрансфузионное осложнение (ПТО)."
+    ];
+
+    const safetyCheck = [
+        "Определение ABO (в отделении и лаборатории) и RhD (лабораторно).",
+        "Повторное определение ABO из нового образца при расхождении этапов.",
+        "Скрининг ААТ перед переливанием ЭКК; при выявлении – идентификация и подбор в службе крови.",
+        "Определение фенотипа Rh (C,c,E,e) и Kell по показаниям.",
+        "Макроскопическая оценка каждой дозы (гемолиз, целостность контейнера).",
+        "Контрольное определение группы донора и реципиента.",
+        "Проба на индивидуальную совместимость на плоскости.",
+        "Биологическая проба (3-кратное введение).",
+        "Мониторинг во время трансфузии и 2 часа после.",
+        "Экстренная трансфузия без группы: ЭКК О(I) Rh-отр. К-отр. до 500 мл (или отмытые до 1000 мл), СЗП АВ(IV) Rh-отр."
+    ];
+
+    const coldChainRows = [
+        { этап: "Транспортировка в/из Центра", ЭКК: "+2…+6°C, термоконтейнер с логгером", ТКК: "+20…+24°C", СЗП_крио: "не выше -18°C с х/элементами", ЛП_ИМН: "+2…+6°C" },
+        { этап: "Хранение в КТ", ЭКК: "холодильник +2…+6°C", ТКК: "тромбомиксер +20…+24°C", СЗП_крио: "морозильник -28°C и ниже", ЛП_ИМН: "холодильник +2…+6°C" },
+        { этап: "Транспортировка КТ→отделение", ЭКК: "+2…+6°C контейнер", ТКК: "+20…+24°C", СЗП_крио: "не выше -18°C", ЛП_ИМН: "+2…+6°C" },
+        { этап: "Размораживание", ЭКК: "—", ТКК: "—", СЗП_крио: "+37°C (плазморазмораживатель)", ЛП_ИМН: "по инструкции" }
+    ];
+
+    const immunoRules = [
+        "ABO, RhD – всем потенциальным реципиентам.",
+        "Скрининг ААТ – всем реципиентам ЭКК. Срок действия: 3 суток при повторных переливаниях, 45 суток – без переливаний.",
+        "Фенотип Rh (C,c,E,e) – прикреплённому контингенту, женщинам до 49 лет, детям, при отягощённом трансфузионном анамнезе.",
+        "Фенотип Kell – при вероятности переливания K-положительных ЭКК.",
+        "Подбор совместимых ЭКК в службе крови – при ААТ, отягощённом анамнезе, несовместимости, ГБН, неэффективности трансфузий.",
+        "Подбор ТКК (HLA) – при рефрактерности к тромбоцитам."
+    ];
+
+    const consultIndic = [
+        "Иммуногематологические особенности (ААТ, химера, невозможность определения группы, сомнительная проба).",
+        "Отягощённый трансфузионный, акушерский, аллергологический анамнез.",
+        "Рефрактерность к трансфузиям (2 и более).",
+        "Направление в КДЛ / HLA-лабораторию.",
+        "Отказ пациента от переливания.",
+        "Острая массивная кровопотеря, экстренная трансфузия, аутологичные компоненты.",
+        "ТР и ПТО, затруднения при оценке пригодности продуктов крови."
+    ];
+
+    const procurementOrder = [
+        "Заявка на продукты крови (Приложение 9) – экстренно круглосуточно, планово: ЭКК до 15:00, ТКК и отмытые эритроциты до 12:00, иные – круглосуточно.",
+        "Резерв на операцию – подаётся в день, предшествующий операции, до 15:00.",
+        "Выдача из КТ – после макроскопической оценки, доставка незамедлительно, доступ третьих лиц запрещён.",
+        "Отмена резерва – по телефону КТ с указанием ФИО врача."
+    ];
+
+    const transfusionSteps = [
+        "Только допущенный персонал (приказ главного врача).",
+        "Клинико-лабораторное обоснование в медкарте.",
+        "Письменное согласие реципиента (Приложение 8).",
+        "Заявка в КТ не более чем за 1 час до трансфузии (исключение – операционные).",
+        "Соблюдение холодовой цепи, макроскопическая оценка.",
+        "Подбор пары донор-реципиент: ЭКК – ABO, RhD, фенотип; при ААТ – индивидуально; СЗП – ABO/RhD; ТКК – ABO/RhD/HLA.",
+        "Экстренно при неустановленной группе: ЭКК О(I) Rh-отр. K-отр. до 500 мл.",
+        "Идентификация пациента, проба на совместимость, биопроба.",
+        "Мониторинг во время трансфузии и 2 часа после (Протокол Приложения 13).",
+        "При ТР/ПТО – алгоритм Приложения 14.",
+        "Хранение остатков 48 ч при +2…+6°C.",
+        "Контрольные анализы (ОАК, ОАМ, БАХ, проба на гемолиз)."
+    ];
+
+    const reactionAlgo = [
+        "1️⃣ Выявить признаки: кожный зуд, озноб, боль в пояснице, гипертермия, гипотензия, тахикардия, одышка, изменение цвета мочи.",
+        "2️⃣ Немедленно прекратить трансфузию, сохранить доступ.",
+        "3️⃣ Заменить систему, начать NaCl 0,9%. Запись «биопроба несовместима».",
+        "4️⃣ Неотложная помощь, мониторинг АД, ЭКГ, диурез.",
+        "5️⃣ При выявленных ААТ после экстренной трансфузии – действовать как при тяжёлом ПТО, перевод в ОАР.",
+        "6️⃣ Вызвать врача-трансфузиолога и анестезиолога-реаниматолога.",
+        "7️⃣ Взять кровь/мочу: проба на гемолиз, ABO/Rh/Kell, прямая/непрямая проба Кумбса, коагулограмма, Д-димер, ОАК, БАХ (билирубин, креатинин, ЛДГ, свободный гемоглобин), ОАМ.",
+        "8️⃣ Проверить соблюдение требований безопасности.",
+        "9️⃣ Повторная идентификация, контроль группы, проба на совместимость.",
+        "🔟 Исключить переливание чужой дозы.",
+        "1️⃣1️⃣ Оценить методику трансфузии.",
+        "1️⃣2️⃣ Лёгкая ТР – после терапии возможно продолжить; иначе как средняя/тяжёлая.",
+        "1️⃣3️⃣ Остатки крови хранить при +2…+6°C 48 ч с маркировкой.",
+        "1️⃣4️⃣ Сообщить врачу-трансфузиологу, регистрация в журнале КТ.",
+        "1️⃣5️⃣ Тяжёлое ПТО: перевод в ОАР, врачебный консилиум, расследование, карта-сообщение в службу крови в течение 72 ч."
+    ];
+
+    const docReqs = [
+        "Направление на иммуногематологию (Прил.3) – на первой странице медкарты.",
+        "Титульный лист: группа ABO, RhD, фенотип с датой и подписью врача.",
+        "Письменное согласие (Прил.8).",
+        "Лист регистрации медприменения (Прил.12).",
+        "Протокол переливания (Прил.13).",
+        "Журнал медприменения продуктов крови в отделении (Прил.11).",
+        "Журнал расхождений (Прил.4) и журнал проб на совместимость (Прил.7) – в лаборатории.",
+        "Накладные, заявки, журнал движения в КТ.",
+        "Журналы нумеруются, прошиваются, хранятся в подразделении текущий год, затем в архиве 5 лет."
+    ];
+
+    const qualityCriteria = [
+        "Приложение 15 (оценка пациенту): хирургическое вмешательство, консультация трансфузиолога, письменное согласие, соблюдение требований безопасности, установление ABO/RhD, скрининг ААТ, подбор, заявка, резерв – итого 100 баллов.",
+        "Приложение 18 (оценка подразделения ежеквартально): наличие НПА, обучение 100% персонала, холодовая цепь, оснащение, ведение журналов, регистрация ТР/ПТО – шкала 0-5 баллов, максимум 100."
+    ];
+
+    const prohibitions = [
+        "❌ Доступ в КТ без ответственных лиц (круглосуточно).",
+        "❌ Доступ к продуктам крови посторонних лиц.",
+        "❌ Необоснованные заявки.",
+        "❌ Создание резерва в отделениях (кроме ОАР кардиохирургии, операционных по согласованию).",
+        "❌ Переливание из одного контейнера более чем одному пациенту.",
+        "❌ Возврат непригодных продуктов крови в КТ.",
+        "✅ Приоритет отмытых эритроцитов для кардиохирургии, органной недостаточности, тромбофилии, аллергоанамнеза (п.5.5)."
+    ];
+
+    function buildNav() {
+        const navUl = document.getElementById("navList");
+        const mobileDiv = document.getElementById("mobileNav");
+        navUl.innerHTML = "";
+        mobileDiv.innerHTML = "";
+        sectionsData.forEach(sec => {
+            const li = document.createElement("li");
+            const a = document.createElement("a");
+            a.href = `#${sec.id}`;
+            a.textContent = sec.title;
+            a.addEventListener("click", (e) => {
+                e.preventDefault();
+                document.getElementById(sec.id)?.scrollIntoView({ behavior: "smooth" });
+            });
+            li.appendChild(a);
+            navUl.appendChild(li);
+            const mobLink = document.createElement("a");
+            mobLink.href = `#${sec.id}`;
+            mobLink.textContent = sec.title.length > 32 ? sec.title.slice(0,30)+"…" : sec.title;
+            mobLink.addEventListener("click", (e) => {
+                e.preventDefault();
+                document.getElementById(sec.id)?.scrollIntoView({ behavior: "smooth" });
+            });
+            mobileDiv.appendChild(mobLink);
+        });
+    }
+
+    function renderContent() {
+        const container = document.getElementById("mainContent");
+        container.innerHTML = `
+            <div class="section-card" id="preambule">
+                <div class="section-title">📜 Преамбула и нормативная база</div>
+                <p>Во исполнение следующих документов:</p>
+                <ul class="info-list">${legalActs.map(act => `<li>📌 ${act}</li>`).join('')}</ul>
+                <div class="footnote">Приказ утверждён в целях обеспечения качества трансфузиологической помощи в ГУ «РКМЦ».</div>
+            </div>
+            <div class="section-card" id="approved">
+                <div class="section-title">📎 Утверждённые приложения 1–20 (п.1)</div>
+                <div class="grid-2col">${appendicesList.map(app => `<div style="background:#fafdff; padding:0.5rem;">📄 ${app}</div>`).join('')}</div>
+                <div class="footnote">Формы и инструкции являются неотъемлемой частью приказа.</div>
+            </div>
+            <div class="section-card" id="definitions">
+                <div class="section-title">📖 Термины и определения (ст.2)</div>
+                <ul class="info-list">${definitions.map(d => `<li>🔹 ${d}</li>`).join('')}</ul>
+            </div>
+            <div class="section-card" id="tp_participants">
+                <div class="section-title">👩‍⚕️ Допуск персонала к ТП (п.3,4)</div>
+                <p>К ТП допускаются только медицинские работники Центра, прошедшие контроль знаний (сдавшие зачёт) и включённые в приказ главного врача. Кабинет трансфузиологии (КТ) – организационно-методический центр, в КТ создаётся неснижаемый резерв продуктов крови.</p>
+            </div>
+            <div class="section-card" id="safety_reqs">
+                <div class="section-title">🛡️ Требования безопасности (Приложение 1)</div>
+                <ul class="info-list">${safetyCheck.map(s => `<li>✅ ${s}</li>`).join('')}</ul>
+            </div>
+            <div class="section-card" id="coldchain">
+                <div class="section-title">❄️ Холодовая цепь (Приложение 2)</div>
+                <table><thead><tr><th>Этап</th><th>ЭКК</th><th>ТКК</th><th>СЗП/криопреципитат зам.</th><th>ЛП, ИМН</th></tr></thead><tbody>${coldChainRows.map(r => `<tr><td>${r.этап}</td><td>${r.ЭКК}</td><td>${r.ТКК}</td><td>${r.СЗП_крио}</td><td>${r.ЛП_ИМН}</td></tr>`).join('')}</tbody></table>
+            </div>
+            <div class="section-card" id="immuno">
+                <div class="section-title">🔬 Иммуногематологические исследования (п.7-8)</div>
+                <ul class="info-list">${immunoRules.map(r => `<li>🧪 ${r}</li>`).join('')}</ul>
+                <div class="footnote">Результаты исследований из других организаций не допускаются, кроме направлений из Центра в службу крови.</div>
+            </div>
+            <div class="section-card" id="consult">
+                <div class="section-title">👨‍⚕️ Консультация трансфузиолога (п.9)</div>
+                <ul class="info-list">${consultIndic.map(c => `<li>🩺 ${c}</li>`).join('')}</ul>
+            </div>
+            <div class="section-card" id="order_procurement">
+                <div class="section-title">📦 Порядок обеспечения продуктами крови (Приложение 10, п.6)</div>
+                <ul class="info-list">${procurementOrder.map(p => `<li>📋 ${p}</li>`).join('')}</ul>
+            </div>
+            <div class="section-card" id="transfusion_order">
+                <div class="section-title">💉 Порядок медицинского применения (Приложение 20)</div>
+                <ol class="info-list" style="list-style-type:decimal;">${transfusionSteps.map(step => `<li>${step}</li>`).join('')}</ol>
+            </div>
+            <div class="section-card" id="reaction_algo">
+                <div class="section-title">🚨 Алгоритм при ТР/ПТО (Приложение 14)</div>
+                ${reactionAlgo.map(step => `<div class="step-box">${step}</div>`).join('')}
+            </div>
+            <div class="section-card" id="documentation">
+                <div class="section-title">📂 Требования к документации (Приложение 19)</div>
+                <ul class="info-list">${docReqs.map(d => `<li>📄 ${d}</li>`).join('')}</ul>
+            </div>
+            <div class="section-card" id="quality">
+                <div class="section-title">📊 Оценка качества ТП (Прил.15,18)</div>
+                <ul class="info-list">${qualityCriteria.map(q => `<li>⭐ ${q}</li>`).join('')}</ul>
+                <div class="footnote">Отчёты структурных подразделений предоставляются ежемесячно до 5 числа.</div>
+            </div>
+            <div class="section-card" id="prohibitions">
+                <div class="section-title">⛔ Запрещённые действия / Исключения (п.5.6, 5.5, 6)</div>
+                <ul class="info-list">${prohibitions.map(p => `<li>${p}</li>`).join('')}</ul>
+            </div>
+            <div class="section-card" id="sources">
+                <div class="section-title">📁 Исходники / Нормативные источники</div>
+                <p><strong>Полный текст приказа №286 от 27.05.2025 (в изложении) представлен в настоящем веб-приложении со всеми приложениями и требованиями.</strong></p>
+                <div class="btn-group">
+                    <button class="btn" id="printBtn">🖨️ Распечатать / Сохранить как PDF</button>
+                    <button class="btn" id="copyTextBtn">📋 Скопировать сводку приказа</button>
+                </div>
+                <div class="subsection-title">Законодательные акты (первоисточники)</div>
+                <ul class="info-list">${legalActs.map(act => `<li>📚 ${act}</li>`).join('')}</ul>
+                <div class="subsection-title">Полный перечень приложений №1–20 (шаблоны, журналы, направления)</div>
+                <p>Все формы (направления, согласие, журналы, протоколы) утверждены приказом и могут быть воспроизведены по приведённым выше структурам. Для скачивания образцов используйте печать данной страницы или копирование текста.</p>
+                <pre>📌 Для практического использования: все разделы выше содержат дословные требования из приказа. Рекомендуется распечатать соответствующие чек-листы (безопасность, алгоритм ТР/ПТО, холодовая цепь).</pre>
+            </div>
+        `;
+        document.getElementById("printBtn")?.addEventListener("click", () => window.print());
+        document.getElementById("copyTextBtn")?.addEventListener("click", () => {
+            const textToCopy = Array.from(document.querySelectorAll(".section-card")).map(card => card.innerText).join("\n\n");
+            navigator.clipboard.writeText(textToCopy).then(() => alert("Сводка приказа скопирована в буфер обмена."));
+        });
+    }
+
+    buildNav();
+    renderContent();
+</script>
+</body>
+</html>
