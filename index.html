@@ -211,6 +211,127 @@
             overflow-x: auto;
             font-size: 0.8rem;
         }
+        .appendix-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: #fafdff;
+            border: 1px solid #cde3f0;
+            padding: 0.6rem 0.8rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: #1a4b6e;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        .appendix-btn:hover:not(:disabled) {
+            background: #e5f0f7;
+            border-color: #0f6b9c;
+            color: #0a3146;
+        }
+        .appendix-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-outline {
+            background: white;
+            color: #0f6b9c;
+            border: 2px solid #0f6b9c;
+        }
+        .btn-outline:hover {
+            background: #e5f0f7;
+            color: #0a4a6e;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 30, 50, 0.75);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        .modal-overlay.is-open {
+            display: flex;
+        }
+        .modal-dialog {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            max-width: min(95vw, 1100px);
+            width: 100%;
+            max-height: 92vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+        }
+        .modal-dialog--pdf {
+            max-width: min(95vw, 900px);
+            height: 90vh;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #cde3f0;
+            flex-shrink: 0;
+        }
+        .modal-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #0f3b55;
+            padding-right: 1rem;
+        }
+        .modal-close {
+            background: #eef2f5;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.4rem;
+            line-height: 1;
+            cursor: pointer;
+            color: #1a4b6e;
+            flex-shrink: 0;
+        }
+        .modal-close:hover {
+            background: #d0e2f0;
+        }
+        .modal-body {
+            padding: 1rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .modal-body img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto 1rem;
+            border: 1px solid #cfdfe9;
+            border-radius: 8px;
+        }
+        .modal-body img:last-child {
+            margin-bottom: 0;
+        }
+        .modal-body iframe {
+            width: 100%;
+            height: calc(90vh - 120px);
+            min-height: 400px;
+            border: none;
+            border-radius: 8px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            padding: 0 1rem 1rem;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
@@ -225,6 +346,31 @@
             <nav><ul id="navList"></ul></nav>
         </aside>
         <main class="content" id="mainContent"></main>
+    </div>
+</div>
+
+<div class="modal-overlay" id="imageModal" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <span class="modal-title" id="imageModalTitle"></span>
+            <button type="button" class="modal-close" id="imageModalClose" aria-label="Закрыть">&times;</button>
+        </div>
+        <div class="modal-body" id="imageModalBody"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="pdfModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog--pdf" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <span class="modal-title">Приказ № 286 от 27.05.2025 (PDF)</span>
+            <button type="button" class="modal-close" id="pdfModalClose" aria-label="Закрыть">&times;</button>
+        </div>
+        <div class="modal-body">
+            <iframe id="pdfFrame" title="Приказ № 286"></iframe>
+        </div>
+        <div class="modal-actions">
+            <a class="btn" id="pdfDownloadLink" href="assets/286_27_05_25.pdf" download="Приказ_286_27_05_2025.pdf">⬇️ Скачать PDF</a>
+        </div>
     </div>
 </div>
 
@@ -257,6 +403,31 @@
         "Постановление Минздрава РБ от 19.05.2023 № 89 «О качестве крови и номенклатуре»",
         "Приказ Минздрава РБ от 11.12.2019 № 1486 «Типовое положение о трансфузиологической помощи»"
     ];
+
+    const ORDER_PDF = "assets/286_27_05_25.pdf";
+
+    const appendixImages = {
+        1: ["assets/Appendix1.png"],
+        2: ["assets/Appendix2.png"],
+        3: ["assets/Appendix3.png"],
+        4: ["assets/Appendix4.png"],
+        5: ["assets/Appendix5.png"],
+        6: ["assets/Appendix6.png"],
+        7: ["assets/Appendix7.png"],
+        8: ["assets/Appendix8.png"],
+        9: ["assets/Appendix9.png"],
+        10: ["assets/Appendix10_1.png", "assets/Appendix10_2.png"],
+        11: ["assets/Appendix11.png"],
+        12: ["assets/Appendix12.png"],
+        13: ["assets/Appendix13_1.png", "assets/Appendix13_2.png"],
+        14: ["assets/Appendix14_1.png", "assets/Appendix14_2.png", "assets/Appendix14_3.png"],
+        15: ["assets/Appendix15_1.png", "assets/Appendix15_2.png"],
+        16: ["assets/Appendix16_1.png", "assets/Appendix16_2.png"],
+        17: ["assets/Appendix17.png"],
+        18: ["assets/Appendix18.png"],
+        19: ["assets/Appendix19_1.png", "assets/Appendix19_2.png", "assets/Appendix19_3.png"],
+        20: ["assets/Appendix20_1.png", "assets/Appendix20_2.png", "assets/Appendix20_3.png"]
+    };
 
     const appendicesList = [
         "1: Требования безопасности", "2: Схема холодовой цепи", "3: Направление на иммуногематологическое исследование",
@@ -386,6 +557,63 @@
         "✅ Приоритет отмытых эритроцитов для кардиохирургии, органной недостаточности, тромбофилии, аллергоанамнеза (п.5.5)."
     ];
 
+    function openModal(overlay) {
+        overlay.classList.add("is-open");
+        overlay.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeModal(overlay) {
+        overlay.classList.remove("is-open");
+        overlay.setAttribute("aria-hidden", "true");
+        if (!document.querySelector(".modal-overlay.is-open")) {
+            document.body.style.overflow = "";
+        }
+    }
+
+    function openAppendixModal(num) {
+        const images = appendixImages[num];
+        if (!images?.length) return;
+        const title = appendicesList[num - 1] || `Приложение ${num}`;
+        document.getElementById("imageModalTitle").textContent = `Приложение ${title}`;
+        document.getElementById("imageModalBody").innerHTML = images
+            .map((src, i) => `<img src="${src}" alt="Приложение ${num}, стр. ${i + 1}" loading="lazy">`)
+            .join("");
+        openModal(document.getElementById("imageModal"));
+    }
+
+    function openPdfModal() {
+        document.getElementById("pdfFrame").src = ORDER_PDF;
+        document.getElementById("pdfDownloadLink").href = ORDER_PDF;
+        openModal(document.getElementById("pdfModal"));
+    }
+
+    function closePdfModal() {
+        closeModal(document.getElementById("pdfModal"));
+        document.getElementById("pdfFrame").src = "";
+    }
+
+    function setupModals() {
+        const imageModal = document.getElementById("imageModal");
+        const pdfModal = document.getElementById("pdfModal");
+
+        document.getElementById("imageModalClose").addEventListener("click", () => closeModal(imageModal));
+        document.getElementById("pdfModalClose").addEventListener("click", closePdfModal);
+
+        imageModal.addEventListener("click", (e) => {
+            if (e.target === imageModal) closeModal(imageModal);
+        });
+        pdfModal.addEventListener("click", (e) => {
+            if (e.target === pdfModal) closePdfModal();
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key !== "Escape") return;
+            if (imageModal.classList.contains("is-open")) closeModal(imageModal);
+            if (pdfModal.classList.contains("is-open")) closePdfModal();
+        });
+    }
+
     function buildNav() {
         const navUl = document.getElementById("navList");
         const mobileDiv = document.getElementById("mobileNav");
@@ -424,8 +652,17 @@
             </div>
             <div class="section-card" id="approved">
                 <div class="section-title">📎 Утверждённые приложения 1–20 (п.1)</div>
-                <div class="grid-2col">${appendicesList.map(app => `<div style="background:#fafdff; padding:0.5rem;">📄 ${app}</div>`).join('')}</div>
-                <div class="footnote">Формы и инструкции являются неотъемлемой частью приказа.</div>
+                <div class="btn-group">
+                    <button type="button" class="btn" id="viewOrderPdfBtn">📄 Просмотреть приказ № 286 (PDF)</button>
+                    <a class="btn btn-outline" href="${ORDER_PDF}" download="Приказ_286_27_05_2025.pdf">⬇️ Скачать приказ (PDF)</a>
+                </div>
+                <p style="margin: 0.5rem 0 1rem; font-size: 0.9rem; color: #4a627a;">Нажмите на приложение, чтобы открыть его форму в окне просмотра.</p>
+                <div class="grid-2col">${appendicesList.map((app, i) => {
+                    const num = i + 1;
+                    const hasImages = appendixImages[num]?.length;
+                    return `<button type="button" class="appendix-btn" data-appendix="${num}" ${hasImages ? "" : "disabled title=\"Изображение недоступно\""}>📄 ${app}</button>`;
+                }).join('')}</div>
+                <div class="footnote">Формы и инструкции являются неотъемлемой частью приказа. Оригинальные бланки — в файлах приложений и в PDF приказа.</div>
             </div>
             <div class="section-card" id="definitions">
                 <div class="section-title">📖 Термины и определения (ст.2)</div>
@@ -481,8 +718,10 @@
                 <div class="section-title">📁 Исходники / Нормативные источники</div>
                 <p><strong>Полный текст приказа №286 от 27.05.2025 (в изложении) представлен в настоящем веб-приложении со всеми приложениями и требованиями.</strong></p>
                 <div class="btn-group">
-                    <button class="btn" id="printBtn">🖨️ Распечатать / Сохранить как PDF</button>
-                    <button class="btn" id="copyTextBtn">📋 Скопировать сводку приказа</button>
+                    <button type="button" class="btn" id="viewOrderPdfBtn2">📄 Просмотреть приказ № 286 (PDF)</button>
+                    <a class="btn btn-outline" href="${ORDER_PDF}" download="Приказ_286_27_05_2025.pdf">⬇️ Скачать приказ (PDF)</a>
+                    <button type="button" class="btn" id="printBtn">🖨️ Распечатать / Сохранить как PDF</button>
+                    <button type="button" class="btn" id="copyTextBtn">📋 Скопировать сводку приказа</button>
                 </div>
                 <div class="subsection-title">Законодательные акты (первоисточники)</div>
                 <ul class="info-list">${legalActs.map(act => `<li>📚 ${act}</li>`).join('')}</ul>
@@ -496,10 +735,17 @@
             const textToCopy = Array.from(document.querySelectorAll(".section-card")).map(card => card.innerText).join("\n\n");
             navigator.clipboard.writeText(textToCopy).then(() => alert("Сводка приказа скопирована в буфер обмена."));
         });
+
+        document.querySelectorAll(".appendix-btn[data-appendix]").forEach(btn => {
+            btn.addEventListener("click", () => openAppendixModal(Number(btn.dataset.appendix)));
+        });
+        document.getElementById("viewOrderPdfBtn")?.addEventListener("click", openPdfModal);
+        document.getElementById("viewOrderPdfBtn2")?.addEventListener("click", openPdfModal);
     }
 
     buildNav();
     renderContent();
+    setupModals();
 </script>
 </body>
 </html>
