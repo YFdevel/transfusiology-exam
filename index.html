@@ -530,6 +530,16 @@
             display: table;
             font-size: 0.8rem;
         }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .checkbox-group label {
+            margin-bottom: 0;
+            font-weight: normal;
+        }
     </style>
 </head>
 <body>
@@ -625,6 +635,7 @@
     let instruction92Questions = [];
     let selectedInstruction92Tags = new Set();
 
+    // --- ДОБАВЛЕНЫ НОВЫЕ КАЛЬКУЛЯТОРЫ (HAS-BLED, CRUSADE, IMPROVE, ATRIA) ---
     const referenceMaterials = [
         {
             id: "actual_pdf",
@@ -695,6 +706,35 @@
             calculator: "match_neonatal_hbn",
             title: "Выбор компонентов при ГБН новорождённых (до 4 мес.)",
             meta: "Приложение 4, таблица 6"
+        },
+        // ---------- НОВЫЕ ШКАЛЫ РИСКА КРОВОТЕЧЕНИЙ ----------
+        {
+            id: "has_bled",
+            type: "calculator",
+            calculator: "has_bled",
+            title: "Шкала HAS-BLED (риск кровотечения при ФП / антикоагулянтах)",
+            meta: "HAS-BLED: оценка риска больших кровотечений (0-9 баллов)"
+        },
+        {
+            id: "crusade",
+            type: "calculator",
+            calculator: "crusade",
+            title: "Шкала CRUSADE (риск геморрагии при ОКС без подъема ST)",
+            meta: "CRUSADE — госпитальные кровотечения (очень низкий — очень высокий)"
+        },
+        {
+            id: "improve_bleeding",
+            type: "calculator",
+            calculator: "improve_bleeding",
+            title: "Шкала IMPROVE Bleeding (внутрибольничные кровотечения)",
+            meta: "IMPROVE — риск при ВТЭ / госпитализированные пациенты"
+        },
+        {
+            id: "atria_bleeding",
+            type: "calculator",
+            calculator: "atria_bleeding",
+            title: "Шкала ATRIA (кровотечения при фибрилляции предсердий)",
+            meta: "ATRIA: стратификация риска геморрагий (0–8 баллов)"
         }
     ];
 
@@ -1113,7 +1153,7 @@
                         ${aboGroups.map((g) => `<tr><td>${g}</td><td>${matchTkkAbo[g].same}</td><td>${matchTkkAbo[g].emergency}</td></tr>`).join("")}
                     </tbody></table></div>
                     <div class="subsection-title">Таблица 4. Плазма, AB0</div>
-                    <div class="calc-table-wrap"><table><thead><tr><th>Реципиент</th><th>Одногруппные</th><th>Иногруппные (экстренно)</th></tr></thead><tbody>
+                    <div class="calc-table-wrap"><tr><thead><tr><th>Реципиент</th><th>Одногруппные</th><th>Иногруппные (экстренно)</th></tr></thead><tbody>
                         ${aboGroups.map((g) => `<tr><td>${g}</td><td>${matchPlasmaAbo[g].same}</td><td>${matchPlasmaAbo[g].emergency}</td></tr>`).join("")}
                     </tbody></table></div>
                     <div class="subsection-title">Таблица 5. Криопреципитат, AB0</div>
@@ -1125,10 +1165,69 @@
                         ${matchNeonatalHbn.map((r) => `<tr><td>${r.mother}</td><td>${r.child}</td><td>${r.ekk}</td><td>${r.plasma}</td></tr>`).join("")}
                     </tbody></table></div>
                     <div class="subsection-title">Приложение 3. ROTEM → криопреципитат</div>
-                    <div class="calc-table-wrap"><table><thead><tr><th>FIBTEM A5</th><th>Δ, мм</th><th>Лиоф. дозы</th><th>Замор., мл/кг</th><th>Фибриноген, мл/кг</th></tr></thead><tbody>
+                    <div class="calc-table-wrap"><table><thead><tr><th>FIBTEM A5</th><th>Δ, мм</th><th>Лиоф. дозы</th><th>Заморож., мл/кг</th><th>Фибриноген, мл/кг</th></tr></thead><tbody>
                         ${rotemCryoTable.map((r) => `<tr><td>${r.a5}</td><td>${r.increase}</td><td>${r.lyophDoses}</td><td>${r.frozenMlKg}</td><td>${r.fibrinogenMlKg}</td></tr>`).join("")}
                     </tbody></table></div>
                 `;
+            // НОВЫЕ КАЛЬКУЛЯТОРЫ
+            case "has_bled":
+                return `
+                    <div class="calc-form">
+                        <div class="checkbox-group"><input type="checkbox" id="has_htn"> <label for="has_htn">Артериальная гипертензия (неконтролируемая АД >160 мм рт.ст.)</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="has_renal"> <label for="has_renal">Почечная недостаточность (диализ, трансплантация, креатинин >200 мкмоль/л)</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="has_liver"> <label for="has_liver">Печеночная недостаточность (цирроз, билирубин >2×нормы, АЛТ/АСТ >3×нормы)</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="has_stroke"> <label for="has_stroke">Инсульт / ТИА в анамнезе</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="has_bleed"> <label for="has_bleed">Предшествующее кровотечение (или предрасположенность)</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="has_labile_inr"> <label for="has_labile_inr">Лабильное МНО (нестабильное/вне терапевтического диапазона)</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="has_age65"> <label for="has_age65">Возраст >65 лет</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="has_antiplatelet"> <label for="has_antiplatelet">Антиагреганты (аспирин, клопидогрел и др.) или НПВП</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="has_alcohol"> <label for="has_alcohol">Злоупотребление алкоголем (>8 порций/нед.)</label></div>
+                        <button type="button" class="btn" id="calcHasBledBtn">Рассчитать HAS-BLED</button>
+                        <div id="hasBledResult"></div>
+                        <p class="calc-note">HAS-BLED: сумма баллов ≥3 указывает на высокий риск кровотечений.</p>
+                    </div>`;
+            case "crusade":
+                return `
+                    <div class="calc-form">
+                        <label>Гематокрит (%): <input type="number" id="crusade_hct" step="1" value="40"></label>
+                        <label>Клиренс креатинина (мл/мин): <input type="number" id="crusade_cc" step="5" value="80"></label>
+                        <label>Частота сердечных сокращений (уд/мин): <input type="number" id="crusade_hr" value="80"></label>
+                        <label>Систолическое АД (мм рт.ст.): <input type="number" id="crusade_sbp" value="120"></label>
+                        <div class="checkbox-group"><input type="checkbox" id="crusade_chf"> <label>Признаки застойной сердечной недостаточности</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="crusade_dm"> <label>Сахарный диабет</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="crusade_vascular"> <label>Предшествующее сосудистое заболевание</label></div>
+                        <button type="button" class="btn" id="calcCrusadeBtn">Рассчитать CRUSADE</button>
+                        <div id="crusadeResult"></div>
+                        <p class="calc-note">CRUSADE: сумма баллов переводится в категорию риска госпитального кровотечения.</p>
+                    </div>`;
+            case "improve_bleeding":
+                return `
+                    <div class="calc-form">
+                        <div class="checkbox-group"><input type="checkbox" id="improve_active_bleed"> <label>Активное кровотечение на момент госпитализации</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="improve_age85"> <label>Возраст >85 лет</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="improve_plat"> <label>Тромбоцитопения (<50×10⁹/л)</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="improve_liver"> <label>Печеночная недостаточность (МНО >1,5)</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="improve_renal"> <label>Почечная недостаточность (клиренс креатинина <30 мл/мин)</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="improve_cvc"> <label>Центральный венозный катетер</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="improve_rheum"> <label>Ревматологическое заболевание</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="improve_male"> <label>Мужской пол</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="improve_cancer"> <label>Активное злокачественное новообразование</label></div>
+                        <button type="button" class="btn" id="calcImproveBtn">Рассчитать IMPROVE Bleeding</button>
+                        <div id="improveResult"></div>
+                        <p class="calc-note">IMPROVE: сумма баллов (макс 15) — риск внутрибольничного кровотечения.</p>
+                    </div>`;
+            case "atria_bleeding":
+                return `
+                    <div class="calc-form">
+                        <div class="checkbox-group"><input type="checkbox" id="atria_anemia"> <label>Анемия (гемоглобин <12 г/дл у мужчин, <11 г/дл у женщин)</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="atria_crcl"> <label>Тяжелая почечная недостаточность (клиренс креатинина <30 мл/мин)</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="atria_age75"> <label>Возраст ≥75 лет</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="atria_prior_bleed"> <label>Любое предшествующее кровотечение</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="atria_htn"> <label>Артериальная гипертензия</label></div>
+                        <button type="button" class="btn" id="calcAtriaBtn">Рассчитать ATRIA</button>
+                        <div id="atriaResult"></div>
+                        <p class="calc-note">ATRIA: сумма баллов (макс 8), >5 — высокий риск кровотечений.</p>
+                    </div>`;
             default:
                 return `<p class="calc-result calc-result--warn">Калькулятор не найден.</p>`;
         }
@@ -1228,6 +1327,92 @@
                 update();
                 break;
             }
+            // НОВЫЕ ОБРАБОТЧИКИ
+            case "has_bled":
+                document.getElementById("calcHasBledBtn")?.addEventListener("click", () => {
+                    let score = 0;
+                    if (document.getElementById("has_htn")?.checked) score++;
+                    if (document.getElementById("has_renal")?.checked) score++;
+                    if (document.getElementById("has_liver")?.checked) score++;
+                    if (document.getElementById("has_stroke")?.checked) score++;
+                    if (document.getElementById("has_bleed")?.checked) score++;
+                    if (document.getElementById("has_labile_inr")?.checked) score++;
+                    if (document.getElementById("has_age65")?.checked) score++;
+                    if (document.getElementById("has_antiplatelet")?.checked) score++;
+                    if (document.getElementById("has_alcohol")?.checked) score++;
+                    const resultDiv = document.getElementById("hasBledResult");
+                    let interpretation = (score >= 3) ? "⚠️ Высокий риск кровотечения (≥3). Рассмотреть коррекцию модифицируемых факторов, осторожное назначение антикоагулянтов." : "Низкий / умеренный риск кровотечения (≤2).";
+                    resultDiv.innerHTML = `<div class="calc-result">Сумма баллов HAS-BLED: ${score} из 9. ${interpretation}</div>`;
+                });
+                break;
+            case "crusade":
+                document.getElementById("calcCrusadeBtn")?.addEventListener("click", () => {
+                    let hct = Number(document.getElementById("crusade_hct")?.value) || 40;
+                    let cc = Number(document.getElementById("crusade_cc")?.value) || 80;
+                    let hr = Number(document.getElementById("crusade_hr")?.value) || 80;
+                    let sbp = Number(document.getElementById("crusade_sbp")?.value) || 120;
+                    let chf = document.getElementById("crusade_chf")?.checked;
+                    let dm = document.getElementById("crusade_dm")?.checked;
+                    let vascular = document.getElementById("crusade_vascular")?.checked;
+                    let points = 0;
+                    if (hct < 31) points += 9;
+                    else if (hct < 36) points += 7;
+                    else if (hct < 40) points += 3;
+                    if (cc <= 15) points += 39;
+                    else if (cc <= 30) points += 35;
+                    else if (cc <= 60) points += 28;
+                    else if (cc <= 90) points += 17;
+                    else if (cc <= 120) points += 7;
+                    if (hr > 100) points += 8;
+                    else if (hr > 90) points += 5;
+                    else if (hr > 80) points += 2;
+                    if (sbp > 200) points += 5;
+                    else if (sbp > 150) points += 3;
+                    else if (sbp > 100) points += 1;
+                    if (chf) points += 7;
+                    if (dm) points += 6;
+                    if (vascular) points += 5;
+                    let category = "";
+                    if (points <= 20) category = "очень низкий (3,1%)";
+                    else if (points <= 30) category = "низкий (5,5%)";
+                    else if (points <= 40) category = "средний (8,6%)";
+                    else if (points <= 50) category = "высокий (11,9%)";
+                    else category = "очень высокий (19,5%)";
+                    document.getElementById("crusadeResult").innerHTML = `<div class="calc-result">CRUSADE: ${points} баллов. Категория риска: ${category} (вероятность госпитального кровотечения).</div>`;
+                });
+                break;
+            case "improve_bleeding":
+                document.getElementById("calcImproveBtn")?.addEventListener("click", () => {
+                    let score = 0;
+                    if (document.getElementById("improve_active_bleed")?.checked) score += 5;
+                    if (document.getElementById("improve_age85")?.checked) score += 3;
+                    if (document.getElementById("improve_plat")?.checked) score += 4;
+                    if (document.getElementById("improve_liver")?.checked) score += 4;
+                    if (document.getElementById("improve_renal")?.checked) score += 5;
+                    if (document.getElementById("improve_cvc")?.checked) score += 4;
+                    if (document.getElementById("improve_rheum")?.checked) score += 3;
+                    if (document.getElementById("improve_male")?.checked) score += 2;
+                    if (document.getElementById("improve_cancer")?.checked) score += 3;
+                    let risk = "";
+                    if (score <= 2) risk = "низкий (≈0,4%)";
+                    else if (score <= 4) risk = "средний (≈1,5%)";
+                    else if (score <= 6) risk = "высокий (≈3,6%)";
+                    else risk = "очень высокий (>7%)";
+                    document.getElementById("improveResult").innerHTML = `<div class="calc-result">IMPROVE Bleeding: ${score} баллов. Риск внутрибольничного кровотечения: ${risk}.</div>`;
+                });
+                break;
+            case "atria_bleeding":
+                document.getElementById("calcAtriaBtn")?.addEventListener("click", () => {
+                    let score = 0;
+                    if (document.getElementById("atria_anemia")?.checked) score += 3;
+                    if (document.getElementById("atria_crcl")?.checked) score += 3;
+                    if (document.getElementById("atria_age75")?.checked) score += 2;
+                    if (document.getElementById("atria_prior_bleed")?.checked) score += 1;
+                    if (document.getElementById("atria_htn")?.checked) score += 1;
+                    let interpretation = (score >= 5) ? "Высокий риск кровотечений (4,9%/год)" : (score >= 3 ? "Средний риск (2,0%/год)" : "Низкий риск (0,9%/год)");
+                    document.getElementById("atriaResult").innerHTML = `<div class="calc-result">ATRIA: ${score} баллов. ${interpretation}</div>`;
+                });
+                break;
             default:
                 break;
         }
@@ -1619,7 +1804,6 @@
                     (!item.tags || Array.isArray(item.tags))
             );
         } catch (error) {
-            // Fallback для случаев, когда fetch блокируется (например, при открытии по file://)
             try {
                 const xhr = new XMLHttpRequest();
                 xhr.open("GET", INSTRUCTION_92_QA_URL, false);
