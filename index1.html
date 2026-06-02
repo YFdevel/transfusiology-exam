@@ -540,93 +540,6 @@
             margin-bottom: 0;
             font-weight: normal;
         }
-
-        /* Стили для вкладок пробы Кумбса (внутри модалки) */
-        .coombs-tabs-nav {
-            display: flex;
-            flex-wrap: wrap;
-            background: #ffffff;
-            border-bottom: 2px solid #e9eef3;
-            gap: 4px;
-            margin-bottom: 1rem;
-        }
-        .coombs-tab-btn {
-            background: transparent;
-            border: none;
-            padding: 12px 18px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #4a5c6e;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .coombs-tab-btn:hover {
-            color: #0e3b5c;
-            background: #f0f5fb;
-        }
-        .coombs-tab-btn.active {
-            color: #0b2b4f;
-            border-bottom: 3px solid #1a73b5;
-            background: #f4f9ff;
-        }
-        .coombs-tab-panel {
-            display: none;
-            animation: fade 0.2s ease;
-        }
-        .coombs-tab-panel.active {
-            display: block;
-        }
-        @keyframes fade {
-            from { opacity: 0.4; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .coombs-card {
-            background: #f9fbfd;
-            border-radius: 20px;
-            padding: 18px 22px;
-            border: 1px solid #e2e9f2;
-            margin-bottom: 1.5rem;
-        }
-        .coombs-card h4 {
-            color: #0b2b4f;
-            font-size: 1.2rem;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid #dce4ee;
-            padding-bottom: 10px;
-        }
-        .coombs-scheme {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid #dce4ee;
-            text-align: center;
-            overflow-x: auto;
-            margin: 1rem 0;
-        }
-        .coombs-badge {
-            background: #e5f0fa;
-            color: #0a3147;
-            padding: 3px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-        .coombs-highlight {
-            background: #fff7e5;
-            border-left: 5px solid #e69b2c;
-            padding: 14px 18px;
-            border-radius: 12px;
-            margin: 20px 0;
-        }
     </style>
 </head>
 <body>
@@ -722,7 +635,7 @@
     let instruction92Questions = [];
     let selectedInstruction92Tags = new Set();
 
-    // --- СПРАВОЧНЫЕ МАТЕРИАЛЫ (включая пробу Кумбса) ---
+    // --- ДОБАВЛЕНЫ НОВЫЕ КАЛЬКУЛЯТОРЫ (HAS-BLED, CRUSADE, IMPROVE, ATRIA) ---
     const referenceMaterials = [
         {
             id: "actual_pdf",
@@ -794,6 +707,7 @@
             title: "Выбор компонентов при ГБН новорождённых (до 4 мес.)",
             meta: "Приложение 4, таблица 6"
         },
+        // ---------- НОВЫЕ ШКАЛЫ РИСКА КРОВОТЕЧЕНИЙ ----------
         {
             id: "has_bled",
             type: "calculator",
@@ -821,14 +735,6 @@
             calculator: "atria_bleeding",
             title: "Шкала ATRIA (кровотечения при фибрилляции предсердий)",
             meta: "ATRIA: стратификация риска геморрагий (0–8 баллов)"
-        },
-        // НОВЫЙ РАЗДЕЛ: ПРОБА КУМБСА
-        {
-            id: "coombs_test",
-            type: "calculator",
-            calculator: "coombs_test",
-            title: "Проба Кумбса: прямая и непрямая (антиглобулиновый тест)",
-            meta: "DAT / IAT — диагностика гемолитических анемий, скрининг антител"
         }
     ];
 
@@ -1235,7 +1141,7 @@
                 return `
                     <p class="calc-note">Сводные таблицы приложения 4 Инструкции №92. Для интерактивного подбора используйте отдельные пункты списка.</p>
                     <div class="subsection-title">Таблица 1. ЭКК, AB0</div>
-                    <div class="calc-table-wrap"><tr><thead><tr><th>Реципиент</th><th>Одногруппные</th><th>Иногруппные (экстренно)</th></tr></thead><tbody>
+                    <div class="calc-table-wrap"><table><thead><tr><th>Реципиент</th><th>Одногруппные</th><th>Иногруппные (экстренно)</th></tr></thead><tbody>
                         ${aboGroups.map((g) => `<tr><td>${g}</td><td>${matchEkkAbo[g].same}</td><td>${matchEkkAbo[g].emergency}</td></tr>`).join("")}
                     </tbody></table></div>
                     <div class="subsection-title">Таблица 2. ЭКК, Rh</div>
@@ -1243,11 +1149,11 @@
                         ${rhPhenotypes.map((p) => `<tr><td>${p}</td><td>${matchEkkRh[p].compatible}</td><td>${matchEkkRh[p].acceptable}</td></tr>`).join("")}
                     </tbody></table></div>
                     <div class="subsection-title">Таблица 3. ТКК, AB0</div>
-                    <div class="calc-table-wrap"><td><thead><tr><th>Реципиент</th><th>Одногруппные</th><th>Иногруппные (экстренно)</th></tr></thead><tbody>
+                    <div class="calc-table-wrap"><table><thead><tr><th>Реципиент</th><th>Одногруппные</th><th>Иногруппные (экстренно)</th></tr></thead><tbody>
                         ${aboGroups.map((g) => `<tr><td>${g}</td><td>${matchTkkAbo[g].same}</td><td>${matchTkkAbo[g].emergency}</td></tr>`).join("")}
                     </tbody></table></div>
                     <div class="subsection-title">Таблица 4. Плазма, AB0</div>
-                    <div class="calc-table-wrap"><table><thead><tr><th>Реципиент</th><th>Одногруппные</th><th>Иногруппные (экстренно)</th></tr></thead><tbody>
+                    <div class="calc-table-wrap"><tr><thead><tr><th>Реципиент</th><th>Одногруппные</th><th>Иногруппные (экстренно)</th></tr></thead><tbody>
                         ${aboGroups.map((g) => `<tr><td>${g}</td><td>${matchPlasmaAbo[g].same}</td><td>${matchPlasmaAbo[g].emergency}</td></tr>`).join("")}
                     </tbody></table></div>
                     <div class="subsection-title">Таблица 5. Криопреципитат, AB0</div>
@@ -1263,6 +1169,7 @@
                         ${rotemCryoTable.map((r) => `<tr><td>${r.a5}</td><td>${r.increase}</td><td>${r.lyophDoses}</td><td>${r.frozenMlKg}</td><td>${r.fibrinogenMlKg}</td></tr>`).join("")}
                     </tbody></table></div>
                 `;
+            // НОВЫЕ КАЛЬКУЛЯТОРЫ
             case "has_bled":
                 return `
                     <div class="calc-form">
@@ -1321,133 +1228,6 @@
                         <div id="atriaResult"></div>
                         <p class="calc-note">ATRIA: сумма баллов (макс 8), >5 — высокий риск кровотечений.</p>
                     </div>`;
-            case "coombs_test":
-                // Полноценный раздел "Проба Кумбса" с вкладками и схемами
-                return `
-                    <div style="font-family: inherit;">
-                        <div class="coombs-tabs-nav" id="coombsTabsNav">
-                            <button class="coombs-tab-btn active" data-coombs-tab="direct">🔬 Прямая проба (DAT)</button>
-                            <button class="coombs-tab-btn" data-coombs-tab="indirect">🧪 Непрямая проба (IAT)</button>
-                            <button class="coombs-tab-btn" data-coombs-tab="schemes">📊 Схемы</button>
-                            <button class="coombs-tab-btn" data-coombs-tab="indications">📋 Показания</button>
-                        </div>
-                        <div id="coombsPanelDirect" class="coombs-tab-panel active">
-                            <div class="coombs-card">
-                                <h4>🔵 Прямая проба Кумбса (DAT)</h4>
-                                <p><strong>Определение:</strong> выявляет антитела или компоненты комплемента, <em>уже фиксированные</em> на поверхности эритроцитов пациента <em>in vivo</em>.</p>
-                                <ul>
-                                    <li>Используются эритроциты больного.</li>
-                                    <li>Добавляется антиглобулиновая сыворотка (реагент Кумбса).</li>
-                                    <li>Агглютинация = положительный результат.</li>
-                                </ul>
-                            </div>
-                            <div class="coombs-card">
-                                <h4>🧬 Клиническое значение</h4>
-                                <ul>
-                                    <li>Аутоиммунная гемолитическая анемия (АИГА)</li>
-                                    <li>Гемолитическая болезнь новорожденных</li>
-                                    <li>Лекарственно-индуцированная гемолитическая анемия</li>
-                                    <li>Посттрансфузионные реакции</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div id="coombsPanelIndirect" class="coombs-tab-panel">
-                            <div class="coombs-card">
-                                <h4>🟠 Непрямая проба Кумбса (IAT)</h4>
-                                <p><strong>Определение:</strong> обнаруживает <em>свободные антитела</em> в сыворотке пациента, способные связываться с эритроцитами <em>in vitro</em>.</p>
-                                <ul>
-                                    <li>Сыворотка пациента + стандартные эритроциты.</li>
-                                    <li>Инкубация, отмывание, добавление AHG-реагента.</li>
-                                    <li>Агглютинация указывает на наличие антиэритроцитарных антител.</li>
-                                </ul>
-                            </div>
-                            <div class="coombs-card">
-                                <h4>🧪 Основные цели</h4>
-                                <ul>
-                                    <li>Скрининг антител при беременности</li>
-                                    <li>Подбор совместимой крови перед трансфузией</li>
-                                    <li>Выявление аллоиммунных антител</li>
-                                    <li>Диагностика лекарственных антител</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div id="coombsPanelSchemes" class="coombs-tab-panel">
-                            <div class="coombs-scheme">
-                                <h4>🔬 Прямая проба Кумбса (схема)</h4>
-                                <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" style="max-width:100%; height:auto;">
-                                    <rect x="20" y="30" width="120" height="60" rx="15" fill="#f0f4fc" stroke="#1a4a6f" stroke-width="2"/>
-                                    <text x="80" y="55" text-anchor="middle" font-size="13" fill="#0b2b4f" font-weight="bold">Эритроциты</text>
-                                    <text x="80" y="73" text-anchor="middle" font-size="11" fill="#2a4b6e">пациента</text>
-                                    <circle cx="50" cy="105" r="12" fill="#e74c3c" opacity="0.8"/><text x="50" y="109" text-anchor="middle" font-size="9" fill="white">IgG</text>
-                                    <circle cx="90" cy="95" r="10" fill="#2980b9" opacity="0.8"/><text x="90" y="99" text-anchor="middle" font-size="8" fill="white">C3d</text>
-                                    <text x="80" y="138" text-anchor="middle" font-size="11" fill="#1e2b3c">+ антитела/комплемент</text>
-                                    <path d="M150 70 L210 70" stroke="#1a4a6f" stroke-width="2" marker-end="url(#arrowC)"/>
-                                    <rect x="220" y="30" width="180" height="60" rx="15" fill="#e8f0fe" stroke="#1a73b5" stroke-width="2"/>
-                                    <text x="310" y="55" text-anchor="middle" font-size="13" fill="#0b2b4f" font-weight="bold">Антиглобулиновая</text>
-                                    <text x="310" y="73" text-anchor="middle" font-size="11" fill="#0b2b4f">сыворотка (AHG)</text>
-                                    <path d="M410 70 L470 70" stroke="#1a4a6f" stroke-width="2" marker-end="url(#arrowC)"/>
-                                    <circle cx="540" cy="70" r="35" fill="#f9f3e7" stroke="#b68b40" stroke-width="2"/>
-                                    <text x="540" y="66" text-anchor="middle" font-size="12" fill="#0b2b4f" font-weight="bold">Агглютинация</text>
-                                    <text x="540" y="84" text-anchor="middle" font-size="10" fill="#b34a1f">(+) результат</text>
-                                    <defs><marker id="arrowC" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1a4a6f"/></marker></defs>
-                                </svg>
-                            </div>
-                            <div class="coombs-scheme">
-                                <h4>🧴 Непрямая проба Кумбса (схема)</h4>
-                                <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;">
-                                    <rect x="15" y="20" width="120" height="55" rx="12" fill="#fef7e0" stroke="#b68b40" stroke-width="2"/>
-                                    <text x="75" y="42" text-anchor="middle" font-size="12" fill="#5a3e1a" font-weight="bold">Сыворотка</text>
-                                    <text x="75" y="58" text-anchor="middle" font-size="10" fill="#5a3e1a">пациента</text>
-                                    <rect x="190" y="20" width="120" height="55" rx="12" fill="#eaf2f0" stroke="#2c6e4f" stroke-width="2"/>
-                                    <text x="250" y="42" text-anchor="middle" font-size="12" fill="#1e4a3b" font-weight="bold">Стандартные</text>
-                                    <text x="250" y="58" text-anchor="middle" font-size="10" fill="#1e4a3b">эритроциты</text>
-                                    <path d="M140 48 L180 48" stroke="#1a4a6f" stroke-width="2"/>
-                                    <rect x="360" y="20" width="150" height="55" rx="12" fill="#e1e9f5" stroke="#1a4a6f" stroke-width="2"/>
-                                    <text x="435" y="42" text-anchor="middle" font-size="12" fill="#0b2b4f" font-weight="bold">Инкубация 37°C</text>
-                                    <text x="435" y="58" text-anchor="middle" font-size="10" fill="#0b2b4f">+ отмывание</text>
-                                    <path d="M315 48 L350 48" stroke="#1a4a6f" stroke-width="2"/>
-                                    <rect x="555" y="20" width="125" height="55" rx="12" fill="#d4e2f5" stroke="#1a73b5" stroke-width="2"/>
-                                    <text x="617" y="42" text-anchor="middle" font-size="11" fill="#0b2b4f" font-weight="bold">AHG-реагент</text>
-                                    <text x="617" y="58" text-anchor="middle" font-size="10" fill="#0b2b4f">(анти-IgG)</text>
-                                    <path d="M510 48 L545 48" stroke="#1a4a6f" stroke-width="2"/>
-                                    <circle cx="300" cy="140" r="35" fill="#faf5e9" stroke="#b68b40" stroke-width="2"/>
-                                    <text x="300" y="135" text-anchor="middle" font-size="12" fill="#0b2b4f" font-weight="bold">Агглютинация?</text>
-                                    <text x="300" y="155" text-anchor="middle" font-size="10" fill="#b34a1f">(+) положит.</text>
-                                    <path d="M617 80 L617 110 L380 110 L380 115" stroke="#1a4a6f" stroke-width="1.5" fill="none" stroke-dasharray="4"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <div id="coombsPanelIndications" class="coombs-tab-panel">
-                            <div class="coombs-card">
-                                <h4>✅ Показания (обе пробы)</h4>
-                                <table style="width:100%">
-                                    <thead><tr><th>Состояние</th><th>Тест</th></tr></thead>
-                                    <tbody>
-                                        <tr><td>Аутоиммунная гемолитическая анемия</td><td><span class="coombs-badge">DAT</span></td></tr>
-                                        <tr><td>Гемолитическая болезнь новорожденных</td><td><span class="coombs-badge">DAT</span></td></tr>
-                                        <tr><td>Подозрение на трансфузионную реакцию</td><td><span class="coombs-badge">DAT</span></td></tr>
-                                        <tr><td>Скрининг антител при беременности</td><td><span class="coombs-badge">IAT</span></td></tr>
-                                        <tr><td>Подбор донорской крови</td><td><span class="coombs-badge">IAT</span></td></tr>
-                                        <tr><td>Лекарственно-индуцированная анемия</td><td><span class="coombs-badge">DAT / IAT</span></td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="coombs-card">
-                                <h4>⚠️ Противопоказания / Ограничения</h4>
-                                <ul>
-                                    <li>Абсолютных противопоказаний нет (in vitro тест).</li>
-                                    <li>Ложноотрицательный результат при недостаточной концентрации антител.</li>
-                                    <li>Ложноположительный при наличии холодовых агглютининов.</li>
-                                    <li>Недавнее введение иммуноглобулинов может исказить результат.</li>
-                                    <li>Технические ошибки при отмывании эритроцитов.</li>
-                                </ul>
-                                <div class="coombs-highlight">
-                                    <strong>📌 Важно:</strong> Положительный прямой тест Кумбса не всегда означает гемолиз; до 1 из 1000 доноров может иметь положительный DAT без клинических проявлений.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
             default:
                 return `<p class="calc-result calc-result--warn">Калькулятор не найден.</p>`;
         }
@@ -1547,6 +1327,7 @@
                 update();
                 break;
             }
+            // НОВЫЕ ОБРАБОТЧИКИ
             case "has_bled":
                 document.getElementById("calcHasBledBtn")?.addEventListener("click", () => {
                     let score = 0;
@@ -1631,34 +1412,6 @@
                     let interpretation = (score >= 5) ? "Высокий риск кровотечений (4,9%/год)" : (score >= 3 ? "Средний риск (2,0%/год)" : "Низкий риск (0,9%/год)");
                     document.getElementById("atriaResult").innerHTML = `<div class="calc-result">ATRIA: ${score} баллов. ${interpretation}</div>`;
                 });
-                break;
-            case "coombs_test":
-                // Инициализация вкладок для пробы Кумбса
-                const container = document.getElementById("calculatorModalBody");
-                if (!container) return;
-                const initCoombsTabs = () => {
-                    const btns = container.querySelectorAll(".coombs-tab-btn");
-                    const panels = {
-                        direct: container.querySelector("#coombsPanelDirect"),
-                        indirect: container.querySelector("#coombsPanelIndirect"),
-                        schemes: container.querySelector("#coombsPanelSchemes"),
-                        indications: container.querySelector("#coombsPanelIndications")
-                    };
-                    const switchTab = (tabId) => {
-                        btns.forEach(btn => btn.classList.remove("active"));
-                        Object.values(panels).forEach(panel => panel?.classList.remove("active"));
-                        const activeBtn = Array.from(btns).find(btn => btn.dataset.coombsTab === tabId);
-                        if (activeBtn) activeBtn.classList.add("active");
-                        if (panels[tabId]) panels[tabId].classList.add("active");
-                    };
-                    btns.forEach(btn => {
-                        btn.addEventListener("click", (e) => {
-                            const tabId = btn.dataset.coombsTab;
-                            if (tabId) switchTab(tabId);
-                        });
-                    });
-                };
-                setTimeout(initCoombsTabs, 50);
                 break;
             default:
                 break;
@@ -1815,7 +1568,13 @@
             <div class="section-card" id="instruction_92_qa">
                 <div class="section-title">❓ Ключевые вопросы по Инструкции №92</div>
                 <p>Введите ключевое слово и/или выберите теги. Нажмите на вопрос, чтобы увидеть развернутый ответ.</p>
-                <input type="search" class="qa-search" id="instruction92Search" placeholder="Поиск по вопросам (например: ЭКК, биологическая проба, противопоказания)" aria-label="Поиск вопросов по инструкции №92" />
+                <input
+                    type="search"
+                    class="qa-search"
+                    id="instruction92Search"
+                    placeholder="Поиск по вопросам (например: ЭКК, биологическая проба, противопоказания)"
+                    aria-label="Поиск вопросов по инструкции №92"
+                />
                 <div class="qa-tags-filter" id="instruction92TagsFilter"></div>
                 <ul class="qa-list" id="instruction92QaList"></ul>
                 <div class="qa-empty" id="instruction92QaEmpty" style="display:none;">По вашему запросу совпадений не найдено.</div>
