@@ -442,6 +442,94 @@
             font-size: 0.75rem;
             padding: 0.2rem 0.55rem;
         }
+        .ref-material-btn {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.75rem;
+            width: 100%;
+            text-align: left;
+            background: #fafdff;
+            border: 1px solid #cde3f0;
+            padding: 0.65rem 0.85rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: #1a4b6e;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        .ref-material-btn:hover {
+            background: #e5f0f7;
+            border-color: #0f6b9c;
+            color: #0a3146;
+        }
+        .ref-material-btn__meta {
+            font-size: 0.72rem;
+            color: #4a627a;
+            margin-top: 0.2rem;
+        }
+        .ref-material-badge {
+            flex-shrink: 0;
+            border-radius: 999px;
+            padding: 0.15rem 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: #e5f0f7;
+            color: #0f6b9c;
+        }
+        .ref-material-badge--calc {
+            background: #e8f5e9;
+            color: #2e6b3e;
+        }
+        .calc-form {
+            display: grid;
+            gap: 0.85rem;
+            max-width: 520px;
+        }
+        .calc-form label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1a4b6e;
+            margin-bottom: 0.35rem;
+        }
+        .calc-form select,
+        .calc-form input {
+            width: 100%;
+            border: 1px solid #cfdfe9;
+            border-radius: 10px;
+            padding: 0.55rem 0.65rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        .calc-result {
+            margin-top: 1rem;
+            padding: 0.85rem 1rem;
+            background: #f4faf6;
+            border: 1px solid #c8e6c9;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: #1f4d2e;
+        }
+        .calc-result--warn {
+            background: #fff8e8;
+            border-color: #f0d9a8;
+            color: #6b4e12;
+        }
+        .calc-note {
+            font-size: 0.78rem;
+            color: #4a627a;
+            margin-top: 0.75rem;
+        }
+        .calc-table-wrap {
+            overflow-x: auto;
+            margin-top: 0.75rem;
+        }
+        .calc-table-wrap table {
+            display: table;
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -470,6 +558,16 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="calculatorModal" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <span class="modal-title" id="calculatorModalTitle"></span>
+            <button type="button" class="modal-close" id="calculatorModalClose" aria-label="Закрыть">&times;</button>
+        </div>
+        <div class="modal-body" id="calculatorModalBody"></div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="pdfModal" aria-hidden="true">
     <div class="modal-dialog modal-dialog--pdf" role="dialog" aria-modal="true">
         <div class="modal-header">
@@ -492,6 +590,7 @@
         { id: "approved", title: "📎 Утверждённые приложения 1–20" },
         { id: "instruction_92_doc", title: "📘 Инструкция №92 (PDF)" },
         { id: "instruction_92_qa", title: "❓ Ключевые вопросы: Инструкция №92" },
+        { id: "reference_materials", title: "🧮 Доп. расчёты и справочники" },
         { id: "definitions", title: "📖 Термины и определения (п.2)" },
         { id: "tp_participants", title: "👩‍⚕️ Допуск персонала и КТ (п.3–4)" },
         { id: "work_mode", title: "⏰ Режим ТП и обращение с ПК (п.5.2–5.4)" },
@@ -525,6 +624,137 @@
     const INSTRUCTION_92_PDF_TITLE = "Постановление Минздрава РБ № 92 от 19.05.2023";
     let instruction92Questions = [];
     let selectedInstruction92Tags = new Set();
+
+    const referenceMaterials = [
+        {
+            id: "actual_pdf",
+            type: "pdf",
+            title: "Актуальные вопросы трансфузиологии (лекция Вагановой Т. В.)",
+            pdf: "assets/actual.pdf",
+            download: "Актуальные_вопросы_трансфузиологии.pdf"
+        },
+        {
+            id: "monoclones_pdf",
+            type: "pdf",
+            title: "Определение групп крови системы AB0 при помощи моноклональных реагентов",
+            pdf: "assets/monoclones.pdf",
+            download: "AB0_моноклональные_реагенты.pdf"
+        },
+        {
+            id: "cryo_rotem",
+            type: "calculator",
+            calculator: "cryo_rotem",
+            title: "Расчёт доз криопреципитата по ротационной тромбоэластометрии",
+            meta: "Инструкция №92, приложение 3"
+        },
+        {
+            id: "match_overview",
+            type: "calculator",
+            calculator: "match_overview",
+            title: "Критерии выбора пары донор–реципиент",
+            meta: "Инструкция №92, приложение 4 (обзор таблиц 1–6)"
+        },
+        {
+            id: "match_ekk_ab0",
+            type: "calculator",
+            calculator: "match_ekk_ab0",
+            title: "Выбор пары донор–реципиент по AB0 при переливании ЭКК",
+            meta: "Приложение 4, таблица 1"
+        },
+        {
+            id: "match_ekk_rh",
+            type: "calculator",
+            calculator: "match_ekk_rh",
+            title: "Выбор пары донор–реципиент по антигенам Rh при переливании ЭКК",
+            meta: "Приложение 4, таблица 2"
+        },
+        {
+            id: "match_tkk_ab0",
+            type: "calculator",
+            calculator: "match_tkk_ab0",
+            title: "Выбор пары донор–реципиент по AB0 при переливании ТКК",
+            meta: "Приложение 4, таблица 3"
+        },
+        {
+            id: "match_plasma_ab0",
+            type: "calculator",
+            calculator: "match_plasma_ab0",
+            title: "Выбор пары донор–реципиент по AB0 при переливании компонентов плазмы",
+            meta: "Приложение 4, таблица 4"
+        },
+        {
+            id: "match_cryo_ab0",
+            type: "calculator",
+            calculator: "match_cryo_ab0",
+            title: "Выбор пары донор–реципиент по AB0 при переливании криопреципитата",
+            meta: "Приложение 4, таблица 5"
+        },
+        {
+            id: "match_neonatal_hbn",
+            type: "calculator",
+            calculator: "match_neonatal_hbn",
+            title: "Выбор компонентов при ГБН новорождённых (до 4 мес.)",
+            meta: "Приложение 4, таблица 6"
+        }
+    ];
+
+    const rotemCryoTable = [
+        { a5: 10, increase: 2, lyophDoses: 5, frozenMlKg: 2, fibrinogenMlKg: 12.5 },
+        { a5: 8, increase: 4, lyophDoses: 10, frozenMlKg: 4, fibrinogenMlKg: 25 },
+        { a5: 6, increase: 6, lyophDoses: 15, frozenMlKg: 6, fibrinogenMlKg: 37.5 },
+        { a5: 4, increase: 8, lyophDoses: 20, frozenMlKg: 8, fibrinogenMlKg: 50 },
+        { a5: 2, increase: 10, lyophDoses: 25, frozenMlKg: 10, fibrinogenMlKg: 62.5 },
+        { a5: 0, increase: 12, lyophDoses: 30, frozenMlKg: 12, fibrinogenMlKg: 75 }
+    ];
+
+    const matchEkkAbo = {
+        "0(I)": { same: "0(I)", emergency: "—" },
+        "A(II)": { same: "A(II)", emergency: "0(I)" },
+        "B(III)": { same: "B(III)", emergency: "—" },
+        "AB(IV)": { same: "AB(IV)", emergency: "0(I), A(II), B(III)" }
+    };
+
+    const matchEkkRh = {
+        "CC": { compatible: "CC", acceptable: "Cc" },
+        "cc": { compatible: "cc", acceptable: "Cc" },
+        "Cc": { compatible: "CC, Cc, cc", acceptable: "—" },
+        "EE": { compatible: "EE", acceptable: "Ee" },
+        "ee": { compatible: "ee", acceptable: "Ee" },
+        "Ee": { compatible: "EE, Ee, ee", acceptable: "—" }
+    };
+
+    const matchTkkAbo = {
+        "0(I)": { same: "0(I)", emergency: "AB(IV), A(II), B(III)" },
+        "A(II)": { same: "A(II)", emergency: "0(I) в добавочном растворе, AB(IV)" },
+        "B(III)": { same: "B(III)", emergency: "0(I) в добавочном растворе, AB(IV)" },
+        "AB(IV)": { same: "AB(IV)", emergency: "0(I) в добавочном растворе" }
+    };
+
+    const matchPlasmaAbo = {
+        "0(I)": { same: "0(I)", emergency: "AB(IV), A(II), B(III)" },
+        "A(II)": { same: "A(II)", emergency: "AB(IV)" },
+        "B(III)": { same: "B(III)", emergency: "AB(IV)" },
+        "AB(IV)": { same: "AB(IV)", emergency: "—" }
+    };
+
+    const matchCryoAbo = {
+        "0(I)": { same: "0(I)", emergency: "A(II), B(III), AB(IV)" },
+        "A(II)": { same: "A(II)", emergency: "0(I), B(III), AB(IV)" },
+        "B(III)": { same: "B(III)", emergency: "0(I), A(II), AB(IV)" },
+        "AB(IV)": { same: "AB(IV)", emergency: "A(II), B(III)" }
+    };
+
+    const matchNeonatalHbn = [
+        { mother: "0(I)", child: "A(II)", ekk: "0(I)", plasma: "A(II), AB(IV)" },
+        { mother: "0(I)", child: "B(III)", ekk: "0(I)", plasma: "B(III), AB(IV)" },
+        { mother: "A(II)", child: "B(III)", ekk: "0(I)", plasma: "B(III), AB(IV)" },
+        { mother: "B(III)", child: "A(II)", ekk: "0(I)", plasma: "A(II), AB(IV)" },
+        { mother: "A(II)", child: "AB(IV)", ekk: "A(II), 0(I)", plasma: "AB(IV)" },
+        { mother: "B(III)", child: "AB(IV)", ekk: "B(III), 0(I)", plasma: "AB(IV)" }
+    ];
+
+    const aboGroups = ["0(I)", "A(II)", "B(III)", "AB(IV)"];
+    const rhPhenotypes = ["CC", "cc", "Cc", "EE", "ee", "Ee"];
 
     const appendixImages = {
         1: ["assets/Appendix1.png"],
@@ -767,22 +997,265 @@
         openModal(document.getElementById("imageModal"));
     }
 
-    function openPdfModal() {
-        document.getElementById("pdfFrame").src = ORDER_PDF;
-        document.getElementById("pdfDownloadLink").href = ORDER_PDF;
-        document.getElementById("pdfDownloadLink").download = "Приказ_286_27_05_2025.pdf";
-        document.getElementById("pdfDownloadLink").textContent = "⬇️ Скачать приказ (PDF)";
-        document.querySelector("#pdfModal .modal-title").textContent = "Приказ № 286 от 27.05.2025 (PDF)";
+    function openGenericPdfModal(pdfUrl, title, downloadName) {
+        document.getElementById("pdfFrame").src = pdfUrl;
+        document.getElementById("pdfDownloadLink").href = pdfUrl;
+        document.getElementById("pdfDownloadLink").download = downloadName || "document.pdf";
+        document.getElementById("pdfDownloadLink").textContent = "⬇️ Скачать PDF";
+        document.querySelector("#pdfModal .modal-title").textContent = title;
         openModal(document.getElementById("pdfModal"));
     }
 
+    function openPdfModal() {
+        openGenericPdfModal(ORDER_PDF, "Приказ № 286 от 27.05.2025 (PDF)", "Приказ_286_27_05_2025.pdf");
+    }
+
     function openInstruction92PdfModal() {
-        document.getElementById("pdfFrame").src = INSTRUCTION_92_PDF;
-        document.getElementById("pdfDownloadLink").href = INSTRUCTION_92_PDF;
-        document.getElementById("pdfDownloadLink").download = "Постановление_92_19_05_2023.pdf";
-        document.getElementById("pdfDownloadLink").textContent = "⬇️ Скачать PDF";
-        document.querySelector("#pdfModal .modal-title").textContent = `${INSTRUCTION_92_PDF_TITLE} (PDF)`;
-        openModal(document.getElementById("pdfModal"));
+        openGenericPdfModal(INSTRUCTION_92_PDF, `${INSTRUCTION_92_PDF_TITLE} (PDF)`, "Постановление_92_19_05_2023.pdf");
+    }
+
+    function closeCalculatorModal() {
+        closeModal(document.getElementById("calculatorModal"));
+        document.getElementById("calculatorModalBody").innerHTML = "";
+    }
+
+    function renderAboSelect(id, label) {
+        return `
+            <div>
+                <label for="${id}">${label}</label>
+                <select id="${id}">${aboGroups.map((g) => `<option value="${g}">${g}</option>`).join("")}</select>
+            </div>
+        `;
+    }
+
+    function renderMatchResult(same, emergency, sameLabel = "Одногруппные (совместимые)", emergencyLabel = "Иногруппные (при экстренных показаниях)") {
+        return `
+            <div class="calc-result">
+                <p><strong>${sameLabel}:</strong> ${same}</p>
+                <p><strong>${emergencyLabel}:</strong> ${emergency}</p>
+            </div>
+        `;
+    }
+
+    function getCalculatorHtml(calculatorId) {
+        switch (calculatorId) {
+            case "cryo_rotem":
+                return `
+                    <p class="calc-note">Целевой уровень FIBTEM A5 — не менее 12 мм (приложение 3, Инструкция №92).</p>
+                    <div class="calc-form">
+                        <div>
+                            <label for="fibtemA5">Действительное значение FIBTEM A5 (мм)</label>
+                            <select id="fibtemA5">
+                                ${rotemCryoTable.map((r) => `<option value="${r.a5}">${r.a5}</option>`).join("")}
+                            </select>
+                        </div>
+                    </div>
+                    <div id="cryoRotemResult"></div>
+                    <p class="calc-note">5 доз криопреципитата лиофилизированного повышают FIB-TEM A5 на 1,5–2 мм.</p>
+                `;
+            case "match_ekk_ab0":
+                return `
+                    <div class="calc-form">${renderAboSelect("recipientAbo", "Группа крови реципиента (AB0)")}</div>
+                    <div id="matchEkkAboResult"></div>
+                `;
+            case "match_ekk_rh":
+                return `
+                    <div class="calc-form">
+                        <div>
+                            <label for="recipientRh">Фенотип реципиента (антигены Rh)</label>
+                            <select id="recipientRh">${rhPhenotypes.map((p) => `<option value="${p}">${p}</option>`).join("")}</select>
+                        </div>
+                    </div>
+                    <div id="matchEkkRhResult"></div>
+                `;
+            case "match_tkk_ab0":
+                return `
+                    <div class="calc-form">${renderAboSelect("recipientAbo", "Группа крови реципиента (AB0)")}</div>
+                    <div id="matchTkkAboResult"></div>
+                `;
+            case "match_plasma_ab0":
+                return `
+                    <div class="calc-form">${renderAboSelect("recipientAbo", "Группа крови реципиента (AB0)")}</div>
+                    <div id="matchPlasmaAboResult"></div>
+                `;
+            case "match_cryo_ab0":
+                return `
+                    <div class="calc-form">${renderAboSelect("recipientAbo", "Группа крови реципиента (AB0)")}</div>
+                    <div id="matchCryoAboResult"></div>
+                `;
+            case "match_neonatal_hbn":
+                return `
+                    <div class="calc-form">
+                        <div>
+                            <label for="motherAbo">Группа крови матери (AB0)</label>
+                            <select id="motherAbo">${aboGroups.map((g) => `<option value="${g}">${g}</option>`).join("")}</select>
+                        </div>
+                        <div>
+                            <label for="childAbo">Группа крови ребёнка (AB0)</label>
+                            <select id="childAbo">${aboGroups.map((g) => `<option value="${g}">${g}</option>`).join("")}</select>
+                        </div>
+                    </div>
+                    <div id="matchNeonatalResult"></div>
+                `;
+            case "match_overview":
+                return `
+                    <p class="calc-note">Сводные таблицы приложения 4 Инструкции №92. Для интерактивного подбора используйте отдельные пункты списка.</p>
+                    <div class="subsection-title">Таблица 1. ЭКК, AB0</div>
+                    <div class="calc-table-wrap"><table><thead><tr><th>Реципиент</th><th>Одногруппные</th><th>Иногруппные (экстренно)</th></tr></thead><tbody>
+                        ${aboGroups.map((g) => `<tr><td>${g}</td><td>${matchEkkAbo[g].same}</td><td>${matchEkkAbo[g].emergency}</td></tr>`).join("")}
+                    </tbody></table></div>
+                    <div class="subsection-title">Таблица 2. ЭКК, Rh</div>
+                    <div class="calc-table-wrap"><table><thead><tr><th>Фенотип</th><th>Совместимый</th><th>Допустимый</th></tr></thead><tbody>
+                        ${rhPhenotypes.map((p) => `<tr><td>${p}</td><td>${matchEkkRh[p].compatible}</td><td>${matchEkkRh[p].acceptable}</td></tr>`).join("")}
+                    </tbody></table></div>
+                    <div class="subsection-title">Таблица 3. ТКК, AB0</div>
+                    <div class="calc-table-wrap"><table><thead><tr><th>Реципиент</th><th>Одногруппные</th><th>Иногруппные (экстренно)</th></tr></thead><tbody>
+                        ${aboGroups.map((g) => `<tr><td>${g}</td><td>${matchTkkAbo[g].same}</td><td>${matchTkkAbo[g].emergency}</td></tr>`).join("")}
+                    </tbody></table></div>
+                    <div class="subsection-title">Таблица 4. Плазма, AB0</div>
+                    <div class="calc-table-wrap"><table><thead><tr><th>Реципиент</th><th>Одногруппные</th><th>Иногруппные (экстренно)</th></tr></thead><tbody>
+                        ${aboGroups.map((g) => `<tr><td>${g}</td><td>${matchPlasmaAbo[g].same}</td><td>${matchPlasmaAbo[g].emergency}</td></tr>`).join("")}
+                    </tbody></table></div>
+                    <div class="subsection-title">Таблица 5. Криопреципитат, AB0</div>
+                    <div class="calc-table-wrap"><table><thead><tr><th>Реципиент</th><th>Одногруппный</th><th>Иногруппный (экстренно)</th></tr></thead><tbody>
+                        ${aboGroups.map((g) => `<tr><td>${g}</td><td>${matchCryoAbo[g].same}</td><td>${matchCryoAbo[g].emergency}</td></tr>`).join("")}
+                    </tbody></table></div>
+                    <div class="subsection-title">Таблица 6. ГБН новорождённых</div>
+                    <div class="calc-table-wrap"><table><thead><tr><th>Мать</th><th>Ребёнок</th><th>ЭКК</th><th>Плазма</th></tr></thead><tbody>
+                        ${matchNeonatalHbn.map((r) => `<tr><td>${r.mother}</td><td>${r.child}</td><td>${r.ekk}</td><td>${r.plasma}</td></tr>`).join("")}
+                    </tbody></table></div>
+                    <div class="subsection-title">Приложение 3. ROTEM → криопреципитат</div>
+                    <div class="calc-table-wrap"><table><thead><tr><th>FIBTEM A5</th><th>Δ, мм</th><th>Лиоф. дозы</th><th>Замор., мл/кг</th><th>Фибриноген, мл/кг</th></tr></thead><tbody>
+                        ${rotemCryoTable.map((r) => `<tr><td>${r.a5}</td><td>${r.increase}</td><td>${r.lyophDoses}</td><td>${r.frozenMlKg}</td><td>${r.fibrinogenMlKg}</td></tr>`).join("")}
+                    </tbody></table></div>
+                `;
+            default:
+                return `<p class="calc-result calc-result--warn">Калькулятор не найден.</p>`;
+        }
+    }
+
+    function updateCryoRotemResult() {
+        const a5 = Number(document.getElementById("fibtemA5")?.value);
+        const row = rotemCryoTable.find((r) => r.a5 === a5);
+        const el = document.getElementById("cryoRotemResult");
+        if (!el || !row) return;
+        if (a5 >= 12) {
+            el.innerHTML = `<div class="calc-result">Целевой уровень FIBTEM A5 (≥12 мм) достигнут. Дополнительный расчёт дозы по таблице не требуется.</div>`;
+            return;
+        }
+        el.innerHTML = `
+            <div class="calc-result">
+                <p><strong>Требуемое увеличение FIBTEM A5:</strong> ${row.increase} мм</p>
+                <p><strong>Криопреципитат лиофилизированный:</strong> ${row.lyophDoses} доз</p>
+                <p><strong>Криопреципитат замороженный:</strong> ${row.frozenMlKg} мл/кг</p>
+                <p><strong>Концентрат фибриногена:</strong> ${row.fibrinogenMlKg} мл/кг</p>
+            </div>
+        `;
+    }
+
+    function bindCalculatorHandlers(calculatorId) {
+        const aboHandler = (map, resultId, labels) => {
+            const select = document.getElementById("recipientAbo");
+            const update = () => {
+                const val = select.value;
+                const data = map[val];
+                document.getElementById(resultId).innerHTML = renderMatchResult(
+                    data.same,
+                    data.emergency,
+                    labels?.same,
+                    labels?.emergency
+                );
+            };
+            select?.addEventListener("change", update);
+            update();
+        };
+
+        switch (calculatorId) {
+            case "cryo_rotem":
+                document.getElementById("fibtemA5")?.addEventListener("change", updateCryoRotemResult);
+                updateCryoRotemResult();
+                break;
+            case "match_ekk_ab0":
+                aboHandler(matchEkkAbo, "matchEkkAboResult");
+                break;
+            case "match_ekk_rh": {
+                const update = () => {
+                    const val = document.getElementById("recipientRh").value;
+                    const data = matchEkkRh[val];
+                    document.getElementById("matchEkkRhResult").innerHTML = `
+                        <div class="calc-result">
+                            <p><strong>Совместимый фенотип донора:</strong> ${data.compatible}</p>
+                            <p><strong>Допустимый фенотип (при отсутствии совместимого):</strong> ${data.acceptable}</p>
+                        </div>
+                    `;
+                };
+                document.getElementById("recipientRh")?.addEventListener("change", update);
+                update();
+                break;
+            }
+            case "match_tkk_ab0":
+                aboHandler(matchTkkAbo, "matchTkkAboResult");
+                break;
+            case "match_plasma_ab0":
+                aboHandler(matchPlasmaAbo, "matchPlasmaAboResult");
+                break;
+            case "match_cryo_ab0":
+                aboHandler(matchCryoAbo, "matchCryoAboResult", {
+                    same: "Одногруппный (совместимый)",
+                    emergency: "Иногруппный (при экстренных показаниях)"
+                });
+                break;
+            case "match_neonatal_hbn": {
+                const update = () => {
+                    const mother = document.getElementById("motherAbo").value;
+                    const child = document.getElementById("childAbo").value;
+                    const row = matchNeonatalHbn.find((r) => r.mother === mother && r.child === child);
+                    const el = document.getElementById("matchNeonatalResult");
+                    if (!el) return;
+                    if (!row) {
+                        el.innerHTML = `<div class="calc-result calc-result--warn">Для выбранной пары «мать–ребёнок» комбинация не указана в таблице 6 приложения 4. Уточните группу крови или обратитесь к трансфузиологу.</div>`;
+                        return;
+                    }
+                    el.innerHTML = `
+                        <div class="calc-result">
+                            <p><strong>ЭКК:</strong> ${row.ekk}</p>
+                            <p><strong>Компоненты плазмы:</strong> ${row.plasma}</p>
+                        </div>
+                    `;
+                };
+                document.getElementById("motherAbo")?.addEventListener("change", update);
+                document.getElementById("childAbo")?.addEventListener("change", update);
+                update();
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
+    function openCalculatorModal(calculatorId, title) {
+        document.getElementById("calculatorModalTitle").textContent = title;
+        document.getElementById("calculatorModalBody").innerHTML = getCalculatorHtml(calculatorId);
+        bindCalculatorHandlers(calculatorId);
+        openModal(document.getElementById("calculatorModal"));
+    }
+
+    function openReferenceMaterial(item) {
+        if (item.type === "pdf") {
+            openGenericPdfModal(item.pdf, item.title, item.download);
+            return;
+        }
+        if (item.type === "calculator") {
+            openCalculatorModal(item.calculator, item.title);
+            return;
+        }
+        if (item.type === "image" && item.images?.length) {
+            document.getElementById("imageModalTitle").textContent = item.title;
+            document.getElementById("imageModalBody").innerHTML = item.images
+                .map((src, i) => `<img src="${src}" alt="${item.title}, стр. ${i + 1}" loading="lazy">`)
+                .join("");
+            openModal(document.getElementById("imageModal"));
+        }
     }
 
     function closePdfModal() {
@@ -793,9 +1266,11 @@
     function setupModals() {
         const imageModal = document.getElementById("imageModal");
         const pdfModal = document.getElementById("pdfModal");
+        const calculatorModal = document.getElementById("calculatorModal");
 
         document.getElementById("imageModalClose").addEventListener("click", () => closeModal(imageModal));
         document.getElementById("pdfModalClose").addEventListener("click", closePdfModal);
+        document.getElementById("calculatorModalClose").addEventListener("click", closeCalculatorModal);
 
         imageModal.addEventListener("click", (e) => {
             if (e.target === imageModal) closeModal(imageModal);
@@ -803,11 +1278,24 @@
         pdfModal.addEventListener("click", (e) => {
             if (e.target === pdfModal) closePdfModal();
         });
+        calculatorModal.addEventListener("click", (e) => {
+            if (e.target === calculatorModal) closeCalculatorModal();
+        });
 
         document.addEventListener("keydown", (e) => {
             if (e.key !== "Escape") return;
             if (imageModal.classList.contains("is-open")) closeModal(imageModal);
             if (pdfModal.classList.contains("is-open")) closePdfModal();
+            if (calculatorModal.classList.contains("is-open")) closeCalculatorModal();
+        });
+    }
+
+    function setupReferenceMaterials() {
+        document.querySelectorAll(".ref-material-btn[data-ref-id]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const item = referenceMaterials.find((r) => r.id === btn.dataset.refId);
+                if (item) openReferenceMaterial(item);
+            });
         });
     }
 
@@ -870,6 +1358,27 @@
                     <a class="btn btn-outline" href="${INSTRUCTION_92_PDF}" download="Постановление_92_19_05_2023.pdf">⬇️ Скачать Инструкцию № 92 (PDF)</a>
                 </div>
                 <div class="footnote">Документ добавлен в приложение для быстрого просмотра и скачивания без перехода во внешние источники.</div>
+            </div>
+            <div class="section-card" id="reference_materials">
+                <div class="section-title">🧮 Дополнительные расчётные и справочные материалы</div>
+                <p>Выберите пункт: откроется PDF, интерактивный калькулятор по Инструкции №92 или изображение. Список можно расширять новыми материалами.</p>
+                <div class="grid-2col">${referenceMaterials.map((item) => {
+                    const badge = item.type === "pdf"
+                        ? '<span class="ref-material-badge">PDF</span>'
+                        : item.type === "calculator"
+                            ? '<span class="ref-material-badge ref-material-badge--calc">Калькулятор</span>'
+                            : '<span class="ref-material-badge">Изображение</span>';
+                    return `
+                        <button type="button" class="ref-material-btn" data-ref-id="${item.id}">
+                            <span>
+                                <span>${item.title}</span>
+                                ${item.meta ? `<div class="ref-material-btn__meta">${item.meta}</div>` : ""}
+                            </span>
+                            ${badge}
+                        </button>
+                    `;
+                }).join("")}</div>
+                <div class="footnote">Калькуляторы основаны на приложениях 3–4 Инструкции №92 (постановление Минздрава РБ №92 от 19.05.2023). При расхождении с PDF приоритет — текст инструкции.</div>
             </div>
             <div class="section-card" id="instruction_92_qa">
                 <div class="section-title">❓ Ключевые вопросы по Инструкции №92</div>
@@ -987,6 +1496,7 @@
         document.getElementById("viewOrderPdfBtn2")?.addEventListener("click", openPdfModal);
         document.getElementById("viewInstruction92PdfBtn")?.addEventListener("click", openInstruction92PdfModal);
         setupInstruction92Qa();
+        setupReferenceMaterials();
     }
 
     function inferInstruction92Tags(item) {
