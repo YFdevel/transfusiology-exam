@@ -33,11 +33,19 @@
         .header h1 {
             font-size: 1.6rem;
             font-weight: 700;
+            line-height: 1.3;
         }
         .header p {
             font-size: 0.85rem;
             opacity: 0.9;
             margin-top: 0.25rem;
+        }
+        .header-org {
+            font-weight: 600;
+        }
+        .header-order {
+            font-size: 0.8rem;
+            opacity: 0.85;
         }
         .main-grid {
             display: flex;
@@ -170,6 +178,18 @@
         @media (max-width: 800px) {
             .sidebar {
                 display: none;
+            }
+            .header {
+                padding: 0.8rem 1rem;
+            }
+            .header h1 {
+                font-size: 1.15rem;
+            }
+            .header-org {
+                font-size: 0.78rem;
+            }
+            .header-order {
+                font-size: 0.74rem;
             }
             .main-grid {
                 flex-direction: column;
@@ -332,13 +352,104 @@
             padding: 0 1rem 1rem;
             flex-shrink: 0;
         }
+        .qa-search {
+            width: 100%;
+            max-width: 560px;
+            border: 1px solid #cfdfe9;
+            border-radius: 12px;
+            padding: 0.65rem 0.8rem;
+            font-size: 0.9rem;
+            margin: 0.4rem 0 1rem;
+        }
+        .qa-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .qa-item {
+            border: 1px solid #cde3f0;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #fafdff;
+        }
+        .qa-question {
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: #1a4b6e;
+            text-align: left;
+            font: inherit;
+            font-weight: 600;
+            padding: 0.8rem 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.8rem;
+        }
+        .qa-question:hover {
+            background: #eaf3f9;
+        }
+        .qa-answer {
+            display: none;
+            border-top: 1px solid #d6e7f2;
+            padding: 0.85rem 0.9rem;
+            color: #244c68;
+            background: #ffffff;
+            font-size: 0.9rem;
+        }
+        .qa-item.is-open .qa-answer {
+            display: block;
+        }
+        .qa-empty {
+            font-size: 0.9rem;
+            color: #4a627a;
+            padding: 0.6rem 0.1rem;
+        }
+        .qa-tags-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: -0.2rem 0 0.8rem;
+        }
+        .qa-tag-filter-btn {
+            border: 1px solid #b9d4e6;
+            background: #f2f8fc;
+            color: #1a4b6e;
+            border-radius: 999px;
+            padding: 0.3rem 0.65rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .qa-tag-filter-btn.is-active {
+            background: #0f6b9c;
+            border-color: #0f6b9c;
+            color: #fff;
+        }
+        .qa-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.6rem;
+        }
+        .qa-tag {
+            border-radius: 999px;
+            background: #eaf3f9;
+            color: #22506d;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.55rem;
+        }
     </style>
 </head>
 <body>
 <div class="app-container">
     <div class="header">
-        <h1>📋 Приказ № 286 от 27.05.2025</h1>
-        <p>«Об организации трансфузиологической помощи» — ГУ «РКМЦ» Управления делами Президента Республики Беларусь</p>
+        <h1>Об организации трансфузиологической помощи</h1>
+        <p class="header-org">ГУ «РКМЦ» УД Президента РБ</p>
+        <p class="header-order">Приказ № 286 от 27.05.2025</p>
     </div>
     <div class="mobile-nav" id="mobileNav"></div>
     <div class="main-grid">
@@ -379,6 +490,8 @@
     const sectionsData = [
         { id: "preambule", title: "📜 Преамбула и нормативная база" },
         { id: "approved", title: "📎 Утверждённые приложения 1–20" },
+        { id: "instruction_92_doc", title: "📘 Инструкция №92 (PDF)" },
+        { id: "instruction_92_qa", title: "❓ Ключевые вопросы: Инструкция №92" },
         { id: "definitions", title: "📖 Термины и определения (п.2)" },
         { id: "tp_participants", title: "👩‍⚕️ Допуск персонала и КТ (п.3–4)" },
         { id: "work_mode", title: "⏰ Режим ТП и обращение с ПК (п.5.2–5.4)" },
@@ -407,6 +520,11 @@
     ];
 
     const ORDER_PDF = "assets/286_27_05_25.pdf";
+    const INSTRUCTION_92_PDF = "assets/92_2023.pdf";
+    const INSTRUCTION_92_QA_URL = "assets/instruction92_qa.json";
+    const INSTRUCTION_92_PDF_TITLE = "Постановление Минздрава РБ № 92 от 19.05.2023";
+    let instruction92Questions = [];
+    let selectedInstruction92Tags = new Set();
 
     const appendixImages = {
         1: ["assets/Appendix1.png"],
@@ -652,6 +770,18 @@
     function openPdfModal() {
         document.getElementById("pdfFrame").src = ORDER_PDF;
         document.getElementById("pdfDownloadLink").href = ORDER_PDF;
+        document.getElementById("pdfDownloadLink").download = "Приказ_286_27_05_2025.pdf";
+        document.getElementById("pdfDownloadLink").textContent = "⬇️ Скачать приказ (PDF)";
+        document.querySelector("#pdfModal .modal-title").textContent = "Приказ № 286 от 27.05.2025 (PDF)";
+        openModal(document.getElementById("pdfModal"));
+    }
+
+    function openInstruction92PdfModal() {
+        document.getElementById("pdfFrame").src = INSTRUCTION_92_PDF;
+        document.getElementById("pdfDownloadLink").href = INSTRUCTION_92_PDF;
+        document.getElementById("pdfDownloadLink").download = "Постановление_92_19_05_2023.pdf";
+        document.getElementById("pdfDownloadLink").textContent = "⬇️ Скачать PDF";
+        document.querySelector("#pdfModal .modal-title").textContent = `${INSTRUCTION_92_PDF_TITLE} (PDF)`;
         openModal(document.getElementById("pdfModal"));
     }
 
@@ -731,6 +861,29 @@
                     return `<button type="button" class="appendix-btn" data-appendix="${num}" ${hasImages ? "" : "disabled title=\"Изображение недоступно\""}>📄 ${app}</button>`;
                 }).join('')}</div>
                 <div class="footnote">Формы и инструкции являются неотъемлемой частью приказа. Оригинальные бланки — в файлах приложений и в PDF приказа.</div>
+            </div>
+            <div class="section-card" id="instruction_92_doc">
+                <div class="section-title">📘 Инструкция №92 от 19.05.2023 (оригинал)</div>
+                <p><strong>«Об утверждении Инструкции о порядке медицинского применения крови и (или) ее компонентов в организациях здравоохранения».</strong></p>
+                <div class="btn-group">
+                    <button type="button" class="btn" id="viewInstruction92PdfBtn">📄 Просмотреть Инструкцию № 92 (PDF)</button>
+                    <a class="btn btn-outline" href="${INSTRUCTION_92_PDF}" download="Постановление_92_19_05_2023.pdf">⬇️ Скачать Инструкцию № 92 (PDF)</a>
+                </div>
+                <div class="footnote">Документ добавлен в приложение для быстрого просмотра и скачивания без перехода во внешние источники.</div>
+            </div>
+            <div class="section-card" id="instruction_92_qa">
+                <div class="section-title">❓ Ключевые вопросы по Инструкции №92</div>
+                <p>Введите ключевое слово и/или выберите теги. Нажмите на вопрос, чтобы увидеть развернутый ответ.</p>
+                <input
+                    type="search"
+                    class="qa-search"
+                    id="instruction92Search"
+                    placeholder="Поиск по вопросам (например: ЭКК, биологическая проба, противопоказания)"
+                    aria-label="Поиск вопросов по инструкции №92"
+                />
+                <div class="qa-tags-filter" id="instruction92TagsFilter"></div>
+                <ul class="qa-list" id="instruction92QaList"></ul>
+                <div class="qa-empty" id="instruction92QaEmpty" style="display:none;">По вашему запросу совпадений не найдено.</div>
             </div>
             <div class="section-card" id="definitions">
                 <div class="section-title">📖 Термины и определения (п.2)</div>
@@ -832,11 +985,169 @@
         });
         document.getElementById("viewOrderPdfBtn")?.addEventListener("click", openPdfModal);
         document.getElementById("viewOrderPdfBtn2")?.addEventListener("click", openPdfModal);
+        document.getElementById("viewInstruction92PdfBtn")?.addEventListener("click", openInstruction92PdfModal);
+        setupInstruction92Qa();
+    }
+
+    function inferInstruction92Tags(item) {
+        const source = `${item.question} ${item.answer}`.toLowerCase();
+        const tags = new Set();
+        if (/глава\s*[1-9]\b|организац|прослежива|консилиум/.test(source)) tags.add("глава");
+        if (/экк|эритроц/.test(source)) tags.add("ЭКК");
+        if (/биологическ.*проб|биопроб/.test(source)) tags.add("биопроба");
+        if (/протокол|медицинск.*карт|направлен|документ|журнал/.test(source)) tags.add("документация");
+        if (/т\s*кк|тромбоц/.test(source)) tags.add("ТКК");
+        if (/сзп|плазм/.test(source)) tags.add("СЗП/плазма");
+        if (/криопреципит|фибриноген/.test(source)) tags.add("криопреципитат");
+        if (/совместим|донор|реципиент|ab0|rh|kell/.test(source)) tags.add("совместимость");
+        if (/аллоиммун|иммуногематолог|антител/.test(source)) tags.add("иммуногематология");
+        if (/тр и пто|осложнен|реакци/.test(source)) tags.add("ТР/ПТО");
+        return Array.from(tags);
+    }
+
+    function getNormalizedInstruction92Questions() {
+        return instruction92Questions.map((item) => {
+            const baseTags = Array.isArray(item.tags) ? item.tags.filter((t) => typeof t === "string" && t.trim()) : [];
+            const inferredTags = inferInstruction92Tags(item);
+            const tags = Array.from(new Set([...baseTags, ...inferredTags]));
+            return { ...item, tags };
+        });
+    }
+
+    function renderInstruction92TagFilters(questions) {
+        const tagsContainer = document.getElementById("instruction92TagsFilter");
+        if (!tagsContainer) return;
+
+        const allTags = Array.from(new Set(questions.flatMap((item) => item.tags || []))).sort((a, b) =>
+            a.localeCompare(b, "ru")
+        );
+
+        tagsContainer.innerHTML = allTags.map((tag) => `
+            <button
+                type="button"
+                class="qa-tag-filter-btn ${selectedInstruction92Tags.has(tag) ? "is-active" : ""}"
+                data-tag="${tag}"
+            >#${tag}</button>
+        `).join("");
+    }
+
+    function renderInstruction92Qa(filterText = "") {
+        const qaList = document.getElementById("instruction92QaList");
+        const emptyBlock = document.getElementById("instruction92QaEmpty");
+        if (!qaList || !emptyBlock) return;
+
+        const normalizedQuestions = getNormalizedInstruction92Questions();
+        renderInstruction92TagFilters(normalizedQuestions);
+
+        const query = filterText.trim().toLowerCase();
+        const visibleItems = normalizedQuestions.filter(({ question, answer, tags }) => {
+            const textMatch = !query || question.toLowerCase().includes(query) || answer.toLowerCase().includes(query);
+            const tagsMatch = !selectedInstruction92Tags.size || tags.some((tag) => selectedInstruction92Tags.has(tag));
+            return textMatch && tagsMatch;
+        });
+
+        qaList.innerHTML = visibleItems.map((item) => `
+            <li class="qa-item">
+                <button type="button" class="qa-question">
+                    <span>${item.question}</span>
+                    <span>▼</span>
+                </button>
+                <div class="qa-answer">
+                    <div>${item.answer}</div>
+                    <div class="qa-tags">${(item.tags || []).map((tag) => `<span class="qa-tag">#${tag}</span>`).join("")}</div>
+                </div>
+            </li>
+        `).join("");
+
+        emptyBlock.style.display = visibleItems.length ? "none" : "block";
+    }
+
+    function setupInstruction92Qa() {
+        const searchInput = document.getElementById("instruction92Search");
+        const qaList = document.getElementById("instruction92QaList");
+        const tagsContainer = document.getElementById("instruction92TagsFilter");
+        if (!searchInput || !qaList || !tagsContainer) return;
+
+        renderInstruction92Qa();
+
+        searchInput.addEventListener("input", () => {
+            renderInstruction92Qa(searchInput.value);
+        });
+
+        tagsContainer.addEventListener("click", (event) => {
+            const button = event.target.closest(".qa-tag-filter-btn[data-tag]");
+            if (!button) return;
+            const tag = button.dataset.tag;
+            if (!tag) return;
+            if (selectedInstruction92Tags.has(tag)) selectedInstruction92Tags.delete(tag);
+            else selectedInstruction92Tags.add(tag);
+            renderInstruction92Qa(searchInput.value);
+        });
+
+        qaList.addEventListener("click", (event) => {
+            const trigger = event.target.closest(".qa-question");
+            if (!trigger) return;
+            trigger.parentElement.classList.toggle("is-open");
+        });
+    }
+
+    async function loadInstruction92Qa() {
+        try {
+            const response = await fetch(INSTRUCTION_92_QA_URL, { cache: "no-store" });
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            const data = await response.json();
+            if (!Array.isArray(data)) {
+                throw new Error("Некорректный формат JSON");
+            }
+            instruction92Questions = data.filter(
+                (item) =>
+                    item &&
+                    typeof item.question === "string" &&
+                    typeof item.answer === "string" &&
+                    (!item.tags || Array.isArray(item.tags))
+            );
+        } catch (error) {
+            // Fallback для случаев, когда fetch блокируется (например, при открытии по file://)
+            try {
+                const xhr = new XMLHttpRequest();
+                xhr.open("GET", INSTRUCTION_92_QA_URL, false);
+                xhr.send(null);
+                if ((xhr.status >= 200 && xhr.status < 300) || (xhr.status === 0 && xhr.responseText)) {
+                    const data = JSON.parse(xhr.responseText);
+                    if (!Array.isArray(data)) {
+                        throw new Error("Некорректный формат JSON в fallback");
+                    }
+                    instruction92Questions = data.filter(
+                        (item) =>
+                            item &&
+                            typeof item.question === "string" &&
+                            typeof item.answer === "string" &&
+                            (!item.tags || Array.isArray(item.tags))
+                    );
+                } else {
+                    throw new Error(`XHR status: ${xhr.status}`);
+                }
+            } catch (fallbackError) {
+                instruction92Questions = [
+                    {
+                        question: "Не удалось загрузить банк вопросов из JSON",
+                        answer: "Проверьте файл assets/instruction92_qa.json. Если страница открыта напрямую (file://), запустите локальный сервер (например, Live Server), либо держите проект открытым в среде, которая отдает файлы по http://localhost.",
+                        tags: ["документация"]
+                    }
+                ];
+                console.error("Ошибка загрузки instruction92_qa.json (fetch):", error);
+                console.error("Ошибка fallback-загрузки (XHR):", fallbackError);
+            }
+        }
+        renderInstruction92Qa(document.getElementById("instruction92Search")?.value || "");
     }
 
     buildNav();
     renderContent();
     setupModals();
+    loadInstruction92Qa();
 </script>
 </body>
 </html>
